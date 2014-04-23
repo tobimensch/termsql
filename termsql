@@ -30,6 +30,7 @@ import sys
 import argparse
 import tempfile
 
+VERSION = "0.1"
 #configureable default values
 sqlite_cmd = 'sqlite3'
 table_name = 'tbl1'
@@ -43,6 +44,7 @@ parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
 parser.add_argument("-s","--sqlite", nargs='?', help="path to sqlite executable")
+parser.add_argument("-v","--version", help="display version information", action="store_true")
 args = parser.parse_args()
 
 if args.outfile:
@@ -55,6 +57,10 @@ else:
     infile = sys.stdin
 if args.sqlite:
     sqlite_cmd = args.sqlite
+if args.version:
+    print VERSION
+    exit(0)
+   
 
 #simplify subprocess.call
 def shell(str):
