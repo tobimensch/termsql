@@ -42,7 +42,7 @@ sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
 sql_db_file = '/tmp/termsql.db'
 delimiter = ' '
-separator = '|'
+separator = '' #default to whatever sqlite defaults to
 mode = 'list'
 
 #setup command line parser
@@ -167,7 +167,10 @@ shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
 if args.query == "":
    args.query = "select * from \""+table_name+"\""
 
-shell(sqlite_cmd + ' -' + mode + ' -separator \"' + separator + '\" ' + sql_db_file + ' \"' + args.query +"\"")
+command_string = sqlite_cmd + ' -' + mode + ' '
+if separator != '':
+    command_string += ' -separator \"' + separator + '\" '
+shell(command_string + sql_db_file + ' \"' + args.query +"\"")
 
 
 
