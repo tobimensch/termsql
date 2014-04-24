@@ -24,6 +24,11 @@
 
 #NOTICE: please contribute improvements back to the project, it's very much appreciated
 
+#TODO:
+#-escape strings before for insertion into database
+#-fix --head feature
+#-
+
 import fileinput
 import subprocess
 import sys
@@ -37,6 +42,7 @@ sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
 sql_db_file = '/tmp/termsql.db'
 delimiter = ' '
+separator = '|'
 
 #setup command line parser
 parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
@@ -51,6 +57,7 @@ parser = argparse.ArgumentParser(description='Convert text into SQL table and qu
 parser.add_argument("query", nargs='?', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is space)") 
+parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default is |)")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
@@ -59,8 +66,11 @@ parser.add_argument("-v","--version", help="display version information", action
 args = parser.parse_args()
 
 
+#process command line input
 if args.delimiter:
     delimiter = args.delimiter
+if args.separator:
+    separator = args.separator
 if args.outfile:
     sql_db_file = args.outfile
 if args.table:
@@ -95,12 +105,10 @@ def get_col_name(i):
 #build sql string to insert row
 def build_insert(row):
     insert_row_string = "insert into \""+table_name+"\"("
-    more_than_one = False
     for x in range(0,len(row)):
-        if more_than_one:
+        if x > 0:
             insert_row_string += ","
         insert_row_string += "\""+get_col_name(x)+"\""
-        more_than_one = True
     insert_row_string += ") values("
     more_than_one = False
     for col in row:
@@ -134,12 +142,10 @@ f.close()
 
 #create create database string
 create_table_string =  "create table \""+table_name+"\"("
-more_than_one = False
 for x in range(0,max_count):
-    if more_than_one:
+    if x > 0:
        create_table_string += ", "
     create_table_string += get_col_name(x) + " TEXT"
-    more_than_one = True
 create_table_string += ");"
 
 
@@ -154,7 +160,7 @@ shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
 if args.query == "":
    args.query = "select * from \""+table_name+"\""
 
-shell(sqlite_cmd + ' ' + sql_db_file + ' \"' + args.query +"\"")
+shell(sqlite_cmd + ' -separator \"' + separator + '\" ' + sql_db_file + ' \"' + args.query +"\"")
 
 
 
