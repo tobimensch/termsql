@@ -157,7 +157,8 @@ create_table_string += ");"
 
 
 #remove database file, if exist
-os.remove(sql_db_file)
+if os.path.isfile(sql_db_file):
+    os.remove(sql_db_file)
 #create database and databasefile
 shell('echo \''+create_table_string+'\' | '+sqlite_cmd + ' ' + sql_db_file)
 #execute inserts, fill table with row data
