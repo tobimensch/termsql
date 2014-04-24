@@ -29,17 +29,28 @@ import subprocess
 import sys
 import argparse
 import tempfile
+import os
 
 VERSION = "0.1"
 #configureable default values
 sqlite_cmd = 'sqlite3'
-table_name = 'tbl1'
+table_name = 'tbl'
 sql_db_file = '/tmp/termsql.db'
+delimiter = ' '
 
 #setup command line parser
-parser = argparse.ArgumentParser(description='Convert text into SQL table and query it')
+parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
+  ps aux | termsql "select * from tbl where COL0='root' limit 5"
+    (outputs 5 processes that are running as root)
+  df -h | termsql -1 "select Filesystem from tbl order by '1K-blocks' limit 1"
+    (return the largest device)
+  cat /proc/cpuinfo | termsql "select COL2 from tbl where COL0='bogomips'"
+    (how many bogomips does your system have?)
+  termsql --infile /etc/group -d ':' "select COL0 from tbl"
+    (read from file, use : as delimiter, shows all groups in /etc/group)''')
 parser.add_argument("query", nargs='?', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
+parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is space)") 
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
@@ -47,6 +58,9 @@ parser.add_argument("-s","--sqlite", nargs='?', help="path to sqlite executable"
 parser.add_argument("-v","--version", help="display version information", action="store_true")
 args = parser.parse_args()
 
+
+if args.delimiter:
+    delimiter = args.delimiter
 if args.outfile:
     sql_db_file = args.outfile
 if args.table:
@@ -108,7 +122,7 @@ def get_col_names(row):
 max_count = 0    
 first_line = True
 for line in infile.readlines():
-    row = line.split()
+    row = line.split(delimiter)
     if len(row) > max_count:
        max_count = len(row)
     if first_line and args.head:
@@ -130,29 +144,17 @@ create_table_string += ");"
 
 
 #remove database file, if exist
-shell('rm -f '+sql_db_file)
+os.remove(sql_db_file)
 #create database and databasefile
 shell('echo \''+create_table_string+'\' | '+sqlite_cmd + ' ' + sql_db_file)
 #execute inserts, fill table with row data
 shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
                      
-    
-#make query on adhoc database
-#syntax:
-#cat blabla | termsql "select * from stdin" #output should be nearly the same as input
-#cat blabla | termsql "select * from stdin where COL2=2" #every line where the second column equals 2
-#cat blabla | termsql "select * from stdin where LASTCOL="string" limit 1 #returns one line where the last column has value "string"
 
 if args.query == "":
    args.query = "select * from \""+table_name+"\""
 
 shell(sqlite_cmd + ' ' + sql_db_file + ' \"' + args.query +"\"")
 
-#query results to stdout
-#returns in format:
-#COL1 COL2 COL3 COL4 #optional
-#123 abc number string
-#234 def number string
-#newlines separate rows, space separates cols
-# "some string with spaces" quotes allow for spaces
+
 
