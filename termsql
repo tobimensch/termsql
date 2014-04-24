@@ -43,6 +43,7 @@ table_name = 'tbl'
 sql_db_file = '/tmp/termsql.db'
 delimiter = ' '
 separator = '|'
+mode = 'list'
 
 #setup command line parser
 parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
@@ -58,6 +59,7 @@ parser.add_argument("query", nargs='?', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is space)") 
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default is |)")
+parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
@@ -67,6 +69,8 @@ args = parser.parse_args()
 
 
 #process command line input
+if args.mode:
+    mode = args.mode
 if args.delimiter:
     delimiter = args.delimiter
 if args.separator:
@@ -130,7 +134,10 @@ def get_col_names(row):
 max_count = 0    
 first_line = True
 for line in infile.readlines():
-    row = line.split(delimiter)
+    if delimiter != ' ':
+        row = line.rstrip('\r\n').split(delimiter)
+    else:
+        row = line.split()        
     if len(row) > max_count:
        max_count = len(row)
     if first_line and args.head:
@@ -160,7 +167,7 @@ shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
 if args.query == "":
    args.query = "select * from \""+table_name+"\""
 
-shell(sqlite_cmd + ' -separator \"' + separator + '\" ' + sql_db_file + ' \"' + args.query +"\"")
+shell(sqlite_cmd + ' -' + mode + ' -separator \"' + separator + '\" ' + sql_db_file + ' \"' + args.query +"\"")
 
 
 
