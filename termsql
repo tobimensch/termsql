@@ -175,33 +175,36 @@ for ins in inserts:
 inserts = temp
 
 #create create database string
-create_table_string =  "create table \""+table_name+"\"("
-for x in range(0,max_count):
-    if x > 0:
-       create_table_string += ", "
-    create_table_string += get_col_name(x) + " " + get_col_type(x)
-create_table_string += ");"
+if max_count > 0:
+    create_table_string =  "create table \""+table_name+"\"("
+    for x in range(0,max_count):
+        if x > 0:
+            create_table_string += ", "
+        create_table_string += get_col_name(x) + " " + get_col_type(x)
+    create_table_string += ");"
+else:
+    exit(0)
 
 
 #remove database file, if exist
-if os.path.isfile(sql_db_file):
-    os.remove(sql_db_file)
+#if os.path.isfile(sql_db_file):
+#    os.remove(sql_db_file)
 
 conn = sqlite3.connect(sql_db_file)
 conn.text_factory = str
 c = conn.cursor()
 
+c.execute("drop table \""+table_name+"\";")
 #create database and databasefile
 c.execute(create_table_string)
 
-
-test = []
-test.extend('?' * (max_count))
-str = ",".join(test)
+temp = []
+temp.extend('?' * (max_count))
+placeholder_str = ",".join(temp)
 
 #execute inserts, fill table with row data
 #shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
-c.executemany('insert into tbl values ('+str+')', inserts)
+c.executemany('insert into tbl values ('+placeholder_str+')', inserts)
 conn.commit()
                      
 
