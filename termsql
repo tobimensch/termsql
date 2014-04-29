@@ -186,12 +186,14 @@ create_table_string += ");"
 #remove database file, if exist
 if os.path.isfile(sql_db_file):
     os.remove(sql_db_file)
-#create database and databasefile
-shell('echo \''+create_table_string+'\' | '+sqlite_cmd + ' ' + sql_db_file)
 
 conn = sqlite3.connect(sql_db_file)
 conn.text_factory = str
 c = conn.cursor()
+
+#create database and databasefile
+c.execute(create_table_string)
+
 
 test = []
 test.extend('?' * (max_count))
@@ -209,6 +211,9 @@ if args.query == "":
 command_string = sqlite_cmd + ' -' + mode + ' '
 if separator != '':
     command_string += ' -separator \"' + separator + '\" '
+
+#for row in c.execute(args.query):
+#    print '|'.join((item or '') for item in row )
 shell(command_string + sql_db_file + ' \"' + args.query +"\"")
 
-print colprobs
+#print colprobs
