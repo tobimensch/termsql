@@ -100,7 +100,10 @@ colnames = [] #only needed when using --head optional arg
 #get name of column x
 def get_col_name(i):
     if args.head:
-        return colnames[i]
+        if len(colnames) > i:
+            return colnames[i]
+        else:
+            return "COL"+str(i)            
     else:
         return "COL"+str(i)
 
@@ -180,7 +183,7 @@ if max_count > 0:
     for x in range(0,max_count):
         if x > 0:
             create_table_string += ", "
-        create_table_string += get_col_name(x) + " " + get_col_type(x)
+        create_table_string += '"'+ get_col_name(x) + '"' + " " + get_col_type(x)
     create_table_string += ");"
 else:
     exit(0)
@@ -194,7 +197,7 @@ conn = sqlite3.connect(sql_db_file)
 conn.text_factory = str
 c = conn.cursor()
 
-c.execute("drop table \""+table_name+"\";")
+c.execute("drop table if exists \""+table_name+"\";")
 #create database and databasefile
 c.execute(create_table_string)
 
