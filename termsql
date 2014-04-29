@@ -35,6 +35,7 @@ import sys
 import argparse
 import tempfile
 import os
+import sqlite3
 
 VERSION = "0.1"
 #configureable default values
@@ -106,8 +107,10 @@ def get_col_name(i):
     else:
         return "COL"+str(i)
 
+inserts = []
 #build sql string to insert row
 def build_insert(row):
+    insert = []
     insert_row_string = "insert into \""+table_name+"\"("
     for x in range(0,len(row)):
         if x > 0:
@@ -120,8 +123,10 @@ def build_insert(row):
             insert_row_string += ","
         insert_row_string += "\"" + col + "\""
         more_than_one = True
+        insert.append(col)
     insert_row_string += ");"
     f.write(insert_row_string)
+    inserts.append(insert)
 
 #get column names using row
 def get_col_names(row):
@@ -147,6 +152,12 @@ for line in infile.readlines():
     first_line = False
 f.close()
 
+temp = []
+for ins in inserts:
+    ins.extend([None] * (max_count - len(ins)))
+    temp.append(ins)
+inserts = temp
+
 #create create database string
 create_table_string =  "create table \""+table_name+"\"("
 for x in range(0,max_count):
@@ -161,8 +172,18 @@ if os.path.isfile(sql_db_file):
     os.remove(sql_db_file)
 #create database and databasefile
 shell('echo \''+create_table_string+'\' | '+sqlite_cmd + ' ' + sql_db_file)
+
+conn = sqlite3.connect(sql_db_file)
+c = conn.cursor()
+
+test = []
+test.extend('?' * (max_count))
+str = ",".join(test)
+
 #execute inserts, fill table with row data
-shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
+#shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
+c.executemany('insert into tbl values ('+str+')', inserts)
+conn.commit()
                      
 
 if args.query == "":
