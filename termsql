@@ -99,11 +99,8 @@ colnames = [] #only needed when using --head optional arg
 
 #get name of column x
 def get_col_name(i):
-    if args.head:
-        if len(colnames) > i:
-            return colnames[i]
-        else:
-            return "COL"+str(i)            
+    if args.head and len(colnames) > i:
+        return colnames[i]
     else:
         return "COL"+str(i)
 
