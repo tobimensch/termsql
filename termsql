@@ -95,9 +95,6 @@ if args.version:
 def shell(str):
     subprocess.call(str, shell=True)
 
-#temporary file to store all insert commands to execute them on the database all at once (good for perfomance)
-f = tempfile.NamedTemporaryFile(delete=False)
-
 colnames = [] #only needed when using --head optional arg
 
 #get name of column x
@@ -108,24 +105,44 @@ def get_col_name(i):
         return "COL"+str(i)
 
 inserts = []
+
+def isfloat(value):
+  try:
+    float(value)
+    return True
+  except ValueError:
+    return False
+
+colprobs = {}
+def update_colprobs(col,data):
+    if not col in colprobs:
+        colprobs[col] = {}
+        colprobs[col]["INTEGER"] = True
+        colprobs[col]["REAL"] = True
+        colprobs[col]["TEXT"] = True
+    if not data.isdigit():
+        colprobs[col]["INTEGER"] = False        
+    if not isfloat(data):
+        colprobs[col]["REAL"] = False
+
+def get_col_type(col):
+    if not col in colprobs:
+        return "TEXT"
+    elif colprobs[col]["INTEGER"]:
+        return "INTEGER"
+    elif colprobs[col]["REAL"]:
+        return "REAL"
+    return "TEXT"
+
+
 #build sql string to insert row
 def build_insert(row):
     insert = []
-    insert_row_string = "insert into \""+table_name+"\"("
-    for x in range(0,len(row)):
-        if x > 0:
-            insert_row_string += ","
-        insert_row_string += "\""+get_col_name(x)+"\""
-    insert_row_string += ") values("
-    more_than_one = False
+    c = 0
     for col in row:
-        if more_than_one:
-            insert_row_string += ","
-        insert_row_string += "\"" + col + "\""
-        more_than_one = True
         insert.append(col)
-    insert_row_string += ");"
-    f.write(insert_row_string)
+        update_colprobs(c,col)
+        c += 1
     inserts.append(insert)
 
 #get column names using row
@@ -150,7 +167,6 @@ for line in infile.readlines():
     else:
         build_insert(row)
     first_line = False
-f.close()
 
 temp = []
 for ins in inserts:
@@ -163,7 +179,7 @@ create_table_string =  "create table \""+table_name+"\"("
 for x in range(0,max_count):
     if x > 0:
        create_table_string += ", "
-    create_table_string += get_col_name(x) + " TEXT"
+    create_table_string += get_col_name(x) + " " + get_col_type(x)
 create_table_string += ");"
 
 
@@ -174,6 +190,7 @@ if os.path.isfile(sql_db_file):
 shell('echo \''+create_table_string+'\' | '+sqlite_cmd + ' ' + sql_db_file)
 
 conn = sqlite3.connect(sql_db_file)
+conn.text_factory = str
 c = conn.cursor()
 
 test = []
@@ -194,5 +211,4 @@ if separator != '':
     command_string += ' -separator \"' + separator + '\" '
 shell(command_string + sql_db_file + ' \"' + args.query +"\"")
 
-
-
+print colprobs
