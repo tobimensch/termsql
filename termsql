@@ -37,7 +37,7 @@ import tempfile
 import os
 import sqlite3
 
-VERSION = "0.1"
+VERSION = "0.2"
 #configureable default values
 sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
@@ -51,7 +51,7 @@ columns = ''
 parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
   ps aux | termsql "select * from tbl where COL0='root' limit 5"
     (outputs 5 processes that are running as root)
-  df -h | termsql -1 "select Filesystem from tbl order by '1K-blocks' limit 1"
+  df | termsql -1 'select Filesystem from tbl order by [1K-blocks] desc limit 1'
     (return the largest device)
   cat /proc/cpuinfo | termsql "select COL2 from tbl where COL0='bogomips'"
     (how many bogomips does your system have?)
