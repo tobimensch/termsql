@@ -64,6 +64,7 @@ parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
 parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |)",action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
+parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query",action="store_true")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
@@ -218,6 +219,8 @@ conn.commit()
 
 if args.query == "":
    args.query = "select * from \""+table_name+"\""
+elif args.select_all:
+   args.query += ";select * from \""+table_name+"\""
 
 command_string = sqlite_cmd + ' -' + mode + ' '
 if separator != '':
