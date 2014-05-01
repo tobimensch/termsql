@@ -45,6 +45,7 @@ sql_db_file = '/tmp/termsql.db'
 delimiter = ' '
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
+columns = ''
 
 #setup command line parser
 parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
@@ -60,6 +61,7 @@ parser.add_argument("query", nargs='?', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is space)") 
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default is |)")
+parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
 parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |)",action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
@@ -89,10 +91,11 @@ else:
     infile = sys.stdin
 if args.sqlite:
     sqlite_cmd = args.sqlite
+if args.columns:
+    columns = [x.strip() for x in args.columns.split(',')]
 if args.version:
     print VERSION
-    exit(0)
-   
+    exit(0)   
 
 #simplify subprocess.call
 def shell(str):
@@ -102,7 +105,9 @@ colnames = [] #only needed when using --head optional arg
 
 #get name of column x
 def get_col_name(i):
-    if args.head and len(colnames) > i:
+    if args.columns and len(columns) > i:
+        return columns[i]
+    elif args.head and len(colnames) > i:
         return colnames[i]
     else:
         return "COL"+str(i)
