@@ -36,16 +36,22 @@ import argparse
 import tempfile
 import os
 import sqlite3
+import locale
 
-VERSION = "0.2"
+locale.setlocale(locale.LC_ALL, '')
+
+VERSION = "0.3alpha"
 #configureable default values
 sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
-sql_db_file = '/tmp/termsql.db'
+sql_db_file = ''
 delimiter = ' '
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
 columns = ''
+offset_head = 0
+max_rows = 0
+queryfile_data = ''
 
 #setup command line parser
 parser = argparse.ArgumentParser(description='Convert text into SQL table and query it', formatter_class=argparse.RawDescriptionHelpFormatter, epilog='''examples:
@@ -61,12 +67,20 @@ parser.add_argument("query", nargs='?', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is space)") 
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default is |)")
+parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input is a whole column, next row begins after n lines")
+parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c name,nick -k nick)")
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
 parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |)",action="store_true")
+parser.add_argument("-H","--offset-head", nargs='?', help="ignore first n lines of input",type=int)
+parser.add_argument("-T","--offset-tail", nargs='?', help="ignore last n lines of input")
+parser.add_argument("-M","--max-rows", nargs='?', help="don't insert more than n rows into database")
+parser.add_argument("-C","--dump-create-table", help="dump create table SQL",action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
 parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query",action="store_true")
+parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existing table. If the existing table doesn't have enough columns it will be ALTERed accordingly, if possible",action="store_true")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
+parser.add_argument("-q","--queryfile", nargs='?', help="load complex query from file, queries on the commandline get executed last")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
 parser.add_argument("-s","--sqlite", nargs='?', help="path to sqlite executable")
 parser.add_argument("-v","--version", help="display version information", action="store_true")
@@ -94,6 +108,10 @@ if args.sqlite:
     sqlite_cmd = args.sqlite
 if args.columns:
     columns = [x.strip() for x in args.columns.split(',')]
+if args.offset_head:
+    offset_head = args.offset_head
+if args.queryfile:
+    queryfile_data = open(args.infile).read()
 if args.version:
     print VERSION
     exit(0)   
@@ -117,7 +135,7 @@ inserts = []
 
 def isfloat(value):
   try:
-    float(value)
+    locale.atof(value)
     return True
   except ValueError:
     return False
@@ -143,7 +161,7 @@ def get_col_type(col):
         return "REAL"
     return "TEXT"
 
-
+insert_count = 0
 #build sql string to insert row
 def build_insert(row):
     insert = []
@@ -163,19 +181,42 @@ def get_col_names(row):
 
 #traverse input
 max_count = 0    
-first_line = True
-for line in infile.readlines():
-    if delimiter != ' ':
-        row = line.rstrip('\r\n').split(delimiter)
-    else:
-        row = line.split()        
-    if len(row) > max_count:
-       max_count = len(row)
-    if first_line and args.head:
-        get_col_names(row)
-    else:
+lines = infile.readlines()
+if offset_head > 0:
+    del lines[:int(args.offset_head)]
+
+if not args.line_as_column:
+    first_line = True
+    for line in lines:
+        if args.max_rows and insert_count >= int(args.max_rows):
+            break
+        if delimiter != ' ':
+            row = line.rstrip('\r\n').split(delimiter)
+        else:
+            row = line.split()        
+        if len(row) > max_count:
+            max_count = len(row)
+        if first_line and args.head:
+            get_col_names(row)
+        else:
+            build_insert(row)
+            insert_count += 1
+        first_line = False
+else:
+    max_count = int(args.line_as_column)
+    col_count = 0 
+    while len(lines) > 0:
+        row = []
+        while True:
+            row.append(lines.pop(0).strip())
+            col_count += 1
+            if not int(args.line_as_column) > col_count:
+                col_count = 0
+                break
+        if args.max_rows and insert_count >= int(args.max_rows):
+            break
         build_insert(row)
-    first_line = False
+        insert_count += 1
 
 temp = []
 for ins in inserts:
@@ -194,10 +235,9 @@ if max_count > 0:
 else:
     exit(0)
 
-
-#remove database file, if exist
-#if os.path.isfile(sql_db_file):
-#    os.remove(sql_db_file)
+if sql_db_file == '':
+    f = tempfile.NamedTemporaryFile()
+    sql_db_file = f.name
 
 conn = sqlite3.connect(sql_db_file)
 conn.text_factory = str
@@ -206,21 +246,29 @@ c = conn.cursor()
 c.execute("drop table if exists \""+table_name+"\";")
 #create database and databasefile
 c.execute(create_table_string)
+if args.dump_create_table:
+    print create_table_string
 
 temp = []
 temp.extend('?' * (max_count))
 placeholder_str = ",".join(temp)
+
+if args.offset_tail and int(args.offset_tail) > 0:
+    del inserts[-int(args.offset_tail):]
 
 #execute inserts, fill table with row data
 #shell('cat '+f.name+ ' | '+sqlite_cmd + ' ' + sql_db_file)
 c.executemany('insert into tbl values ('+placeholder_str+')', inserts)
 conn.commit()
                      
-
-if args.query == "":
-   args.query = "select * from \""+table_name+"\""
+actual_query = args.query
+if actual_query == "":
+   actual_query = "select * from \""+table_name+"\""
 elif args.select_all:
-   args.query += ";select * from \""+table_name+"\""
+   actual_query = actual_query +  ";select * from \""+table_name+"\""
+
+if queryfile_data != '':
+   actual_query = queryfile_data + ';' + actual_query
 
 command_string = sqlite_cmd + ' -' + mode + ' '
 if separator != '':
@@ -228,6 +276,6 @@ if separator != '':
 
 #for row in c.execute(args.query):
 #    print '|'.join((item or '') for item in row )
-shell(command_string + sql_db_file + ' \"' + args.query +"\"")
+shell(command_string + sql_db_file + ' \"' + actual_query +"\"")
 
 #print colprobs
