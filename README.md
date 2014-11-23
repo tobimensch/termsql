@@ -18,6 +18,9 @@ always helpful is:
   
 and also:
   man termsql
+  
+Online manual:
+  http://tobimensch.github.io/termsql
 
 So what can it do?
 ==================
