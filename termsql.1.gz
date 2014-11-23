@@ -28,7 +28,9 @@ use first line/head(er) for column names
 custom delimiter (default is space)
 .TP
 \fB\-p\fR [SEPARATOR], \fB\-\-separator\fR [SEPARATOR]
-set sqlite output field separator (default is |)
+set sqlite output field separator (default depends on
+output mode. ie. for list '|' is the default and for
+csv ',' is the default)
 .TP
 \fB\-l\fR [LINE_AS_COLUMN], \fB\-\-line\-as\-column\fR [LINE_AS_COLUMN]
 each line of input is a whole column, next row begins
