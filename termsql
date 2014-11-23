@@ -53,6 +53,7 @@ offset_head = 0
 max_rows = 0
 queryfile_data = ''
 query_off = False
+merge = None
 
 epilog_expanded = False
 if os.environ.get('MORE_HELP') == 'True':
@@ -91,13 +92,14 @@ parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field
 parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input is a whole column, next row begins after n lines")
 parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c name,nick -k nick)")
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
-parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |). equal to mode tabs",action="store_true")
+parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |). equal to mode column",action="store_true")
 parser.add_argument("-H","--offset-head", nargs='?', help="ignore first n lines of input",type=int)
 parser.add_argument("-T","--offset-tail", nargs='?', help="ignore last n lines of input")
 parser.add_argument("-M","--max-rows", nargs='?', help="don't insert more than n rows into database")
 parser.add_argument("-C","--dump-create-table", help="dump create table SQL",action="store_true")
 parser.add_argument("-D","--dump", help="dump complete SQL to create table and content",action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
+parser.add_argument("-r","--merge", nargs='?', help="merges all columns from column n to the last one into one. This is useful when you have data like filenames with whitespaces in it, to prevent it from getting split by the delimiter. Note that counting starts from 0, therefore n=0 is the first column ...")
 parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query",action="store_true")
 parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existing table. If the existing table doesn't have enough columns it will be ALTERed accordingly, if possible",action="store_true")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
@@ -117,7 +119,9 @@ if args.delimiter:
 if args.separator:
     separator = args.separator
 if args.whitespace:
-    mode = 'tabs'
+    mode = 'column'
+if args.merge:
+    merge = int(args.merge)
 if args.outfile:
     sql_db_file = args.outfile
 if args.table:
@@ -173,6 +177,8 @@ def update_colprobs(col,data):
         colprobs[col]["INTEGER"] = False        
     if not isfloat(data):
         colprobs[col]["REAL"] = False
+    if "MAXLEN" not in colprobs[col] or len(data) > colprobs[col]["MAXLEN"]:
+        colprobs[col]["MAXLEN"] = len(data)
 
 def get_col_type(col):
     if not col in colprobs:
@@ -189,8 +195,12 @@ def build_insert(row):
     insert = []
     c = 0
     for col in row:
-        insert.append(col)
-        update_colprobs(c,col)
+        if merge != None and c > merge:
+            insert[-1] = str(insert[-1]) + delimiter + str(col)
+            update_colprobs(merge,insert[-1])
+        else:
+            insert.append(col)
+            update_colprobs(c,col)
         c += 1
     inserts.append(insert)
 
@@ -239,6 +249,9 @@ else:
             break
         build_insert(row)
         insert_count += 1
+
+if len(colprobs) < max_count:
+    max_count = len(colprobs)
 
 temp = []
 for ins in inserts:
@@ -297,7 +310,18 @@ temp_query_file.write(actual_query + ";")
 temp_query_file.close()
 
 init_file = tempfile.NamedTemporaryFile(delete=False) #temporary file that we give sqlite for initializing settings such as mode
-init_file.write("\n.mode \"" + mode + "\";\n")
+
+column_width_string = ''
+for col in colprobs:
+    column_width_string = column_width_string + ' ' + str(colprobs[col]["MAXLEN"])
+
+if mode == 'insert':
+    init_file.write("\n.mode \"" + mode + "\" "+table_name+"\n")
+else:
+    init_file.write("\n.mode \"" + mode + "\"\n")
+if mode == 'column':
+    #init_file.write("\n.header yes\n")
+    init_file.write("\n.width "+column_width_string+"\n")
 if separator != '':
     init_file.write(".separator \"" + separator + "\"\n")
 if args.dump:
