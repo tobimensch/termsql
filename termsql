@@ -328,14 +328,17 @@ if args.dump:
     init_file.write(".dump\n")
     query_off = True
 if not query_off:
-    init_file.write("\n.read " + temp_query_file.name + "\n")
+    init_file.write(".read \"" + temp_query_file.name + "\"\n")
+
 init_file.close()
 
 command_string = sqlite_cmd + ' -init ' + init_file.name + ' '  + sql_db_file
 
 #for row in c.execute(args.query):
 #    print '|'.join((item or '') for item in row )
-shell(command_string)
+
+# echo " " | is a hack to prevent sqlite from getting into interactive model, maybe there is a more pythonic method
+shell('echo " " | ' + command_string)
 
 os.unlink(init_file.name)
 os.unlink(temp_query_file.name)
