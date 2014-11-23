@@ -25,7 +25,7 @@ show this help message and exit
 use first line/head(er) for column names
 .TP
 \fB\-d\fR [DELIMITER], \fB\-\-delimiter\fR [DELIMITER]
-custom delimiter (default is space)
+custom delimiter (default is whitespace)
 .TP
 \fB\-p\fR [SEPARATOR], \fB\-\-separator\fR [SEPARATOR]
 set sqlite output field separator (default depends on
@@ -44,7 +44,8 @@ one or more columns can make up the primary key (i.e
 set custom column names (ie. \fB\-c\fR 'name,street,age')
 .TP
 \fB\-w\fR, \fB\-\-whitespace\fR
-use whitespace as field separator (default is |)
+use whitespace as field separator (default is |).
+equal to mode tabs
 .TP
 \fB\-H\fR [OFFSET_HEAD], \fB\-\-offset\-head\fR [OFFSET_HEAD]
 ignore first n lines of input
