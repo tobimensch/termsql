@@ -313,4 +313,7 @@ command_string = sqlite_cmd + ' -init ' + init_file.name + ' '  + sql_db_file
 #    print '|'.join((item or '') for item in row )
 shell(command_string)
 
+os.unlink(init_file.name)
+os.unlink(temp_query_file.name)
+
 #print colprobs
