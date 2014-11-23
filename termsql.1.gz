@@ -6,7 +6,7 @@ termsql \- manual page for termsql 0.3alpha
 usage: termsql [\-h] [\-1] [\-d [DELIMITER]] [\-p [SEPARATOR]]
 .IP
 [\-l [LINE_AS_COLUMN]] [\-k [KEY_COLUMNS]] [\-c [COLUMNS]] [\-w]
-[\-H [OFFSET_HEAD]] [\-T [OFFSET_TAIL]] [\-M [MAX_ROWS]] [\-C]
+[\-H [OFFSET_HEAD]] [\-T [OFFSET_TAIL]] [\-M [MAX_ROWS]] [\-C] [\-D]
 [\-m [MODE]] [\-x] [\-a] [\-i [INFILE]] [\-o [OUTFILE]]
 [\-q [QUERYFILE]] [\-t [TABLE]] [\-s [SQLITE]] [\-v]
 [query]
@@ -56,6 +56,9 @@ don't insert more than n rows into database
 \fB\-C\fR, \fB\-\-dump\-create\-table\fR
 dump create table SQL
 .TP
+\fB\-D\fR, \fB\-\-dump\fR
+dump complete SQL to create table and content
+.TP
 \fB\-m\fR [MODE], \fB\-\-mode\fR [MODE]
 set sqlite output mode i.e.: csv, column, html,
 insert, line, list, tabs, tcl (default is list)
@@ -104,3 +107,20 @@ cat \fI\,/proc/cpuinfo\/\fP | termsql "select COL2 from tbl where COL0='bogomips
 termsql \fB\-\-infile\fR \fI\,/etc/group\/\fP \fB\-d\fR ':' "select COL0 from tbl"
 .IP
 (read from file, use : as delimiter, shows all groups in \fI\,/etc/group\/\fP)
+.IP
+termsql \fB\-i\fR MyCSVFile.CSV \fB\-t\fR fancytable \fB\-d\fR ',' \fB\-1\fR \fB\-o\fR mysqlite.db
+.IP
+(creates a new sqlite database from a CSV file. \fB\-d\fR ',' tells termsql to use commata as delimiter. \fB\-1\fR tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. \fB\-t\fR fancytable sets the tablename to fancytable)
+.IP
+sensors | termsql "select COL2 from tbl where COL0='Core'"
+.IP
+(extract the temperature from all your CPU cores)
+.IP
+export LC_ALL=en_US;
+top \fB\-b\fR | head | termsql \fB\-1\fR \fB\-H\fR 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]>=25"
+.IP
+(termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). \fB\-H\fR 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.)
+.IP
+export DISPLAY=$(ps aux | termsql "select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1")
+.IP
+(set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")
