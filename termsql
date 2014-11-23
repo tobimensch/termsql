@@ -49,6 +49,7 @@ delimiter = ' '
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
 columns = ''
+key_columns = ''
 offset_head = 0
 max_rows = 0
 queryfile_data = ''
@@ -134,6 +135,8 @@ else:
     infile = sys.stdin
 if args.sqlite:
     sqlite_cmd = args.sqlite
+if args.key_columns:
+    key_columns = [x.strip() for x in args.key_columns.split(',')]
 if args.columns:
     columns = [x.strip() for x in args.columns.split(',')]
 if args.offset_head:
@@ -268,6 +271,8 @@ if max_count > 0:
         if x > 0:
             create_table_string += ", "
         create_table_string += '"'+ get_col_name(x) + '"' + " " + get_col_type(x)
+    if len(key_columns) > 0:
+        create_table_string += ", PRIMARY KEY ("+','.join(key_columns)+")"
     create_table_string += ");"
 else:
     exit(0)
