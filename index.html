@@ -30,7 +30,9 @@
 
       </header>
       <section>
-        <p></p>Manpage of TERMSQL
+        <p>Content-type: text/html</p>
+
+<p></p>Manpage of TERMSQL
 
 
 <h1>
@@ -244,14 +246,14 @@ display version information
 <tt>&gt; returns the largest device</tt>
 </dd>
 <dt>
-<b>--</b> cat <i>,/proc/cpuinfo/</i> | termsql "select COL2 from tbl where COL0='bogomips'"
+<b>--</b> cat <i>/proc/cpuinfo</i> | termsql "select COL2 from tbl where COL0='bogomips'"
 <dt></dt>
 </dt>
 <dd>
 <tt>&gt; how many bogomips does your system have?</tt>
 </dd>
 <dt>
-<b>--</b> termsql <b>--infile</b> <i>,/etc/group/</i> <b>-d</b> ':' "select COL0 from tbl"
+<b>--</b> termsql <b>--infile</b> <i>/etc/group</i> <b>-d</b> ':' "select COL0 from tbl"
 <dt></dt>
 </dt>
 <dd>
