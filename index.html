@@ -118,7 +118,7 @@ after n lines
 <b>-k</b> [KEY_COLUMNS], <b>--key-columns</b> [KEY_COLUMNS]</dt>
 <dd>
 one or more columns can make up the primary key (i.e
-<b>-k</b> COL0 or <b>-c</b> name,nick <b>-k</b> nick)
+<b>-k</b> COL0 or <b>-c</b> one,two,three <b>-k</b> one,two)
 </dd>
 <dt>
 <b>-c</b> [COLUMNS], <b>--columns</b> [COLUMNS]</dt>
@@ -229,78 +229,68 @@ display version information
 <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>examples:</h3>
 
 <dl compact>
+<dt>
+<b>--</b> ps aux | termsql "select * from tbl where COL0='root' limit 5"
 <dt></dt>
+</dt>
 <dd>
-ps aux | termsql "select * from tbl where COL0='root' limit 5"
+<tt>&gt; outputs 5 processes that are running as root</tt>
 </dd>
+<dt>
+<b>--</b> df | termsql <b>-1</b> 'select Filesystem from tbl order by [1K-blocks] desc limit 1'
 <dt></dt>
+</dt>
 <dd>
-(outputs 5 processes that are running as root)
+<tt>&gt; returns the largest device</tt>
 </dd>
+<dt>
+<b>--</b> cat <i>,/proc/cpuinfo/</i> | termsql "select COL2 from tbl where COL0='bogomips'"
 <dt></dt>
+</dt>
 <dd>
-df | termsql <b>-1</b> 'select Filesystem from tbl order by [1K-blocks] desc limit 1'
+<tt>&gt; how many bogomips does your system have?</tt>
 </dd>
+<dt>
+<b>--</b> termsql <b>--infile</b> <i>,/etc/group/</i> <b>-d</b> ':' "select COL0 from tbl"
 <dt></dt>
+</dt>
 <dd>
-(return the largest device)
+<tt>&gt; read from file, use : as delimiter, shows all groups in /etc/group</tt>
 </dd>
+<dt>
+<b>--</b> termsql <b>-i</b> MyCSVFile.CSV <b>-t</b> fancytable <b>-d</b> ',' <b>-1</b> <b>-o</b> mysqlite.db
 <dt></dt>
+</dt>
 <dd>
-cat <i>,/proc/cpuinfo/</i> | termsql "select COL2 from tbl where COL0='bogomips'"
+<tt>&gt; creates a new sqlite database from a CSV file. -d ',' tells termsql to use commata as delimiter. -1 tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. -t fancytable sets the tablename to fancytable</tt>
 </dd>
+<dt>
+<b>--</b> sensors | termsql "select COL2 from tbl where COL0='Core'"
 <dt></dt>
+</dt>
 <dd>
-(how many bogomips does your system have?)
+<tt>&gt; extract the temperature from all your CPU cores</tt>
 </dd>
+<dt>
+<b>--</b> export LC_ALL=en_US; top <b>-b</b> | head | termsql <b>-1</b> <b>-H</b> 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]&gt;=25"
 <dt></dt>
+</dt>
 <dd>
-termsql <b>--infile</b> <i>,/etc/group/</i> <b>-d</b> ':' "select COL0 from tbl"
+<tt>&gt; termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). -H 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.</tt>
 </dd>
+<dt>
+<b>--</b> export DISPLAY=$(ps aux | termsql "select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1")
 <dt></dt>
+</dt>
 <dd>
-(read from file, use : as delimiter, shows all groups in <i>,/etc/group/</i>)
+<tt>&gt; set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")</tt>
 </dd>
+<dt>
+<b>--</b> ls <b>-lha</b> /usr/bin/* | termsql <b>-w</b> <b>-r</b> 8 "select * from tbl order by COL8 desc"
 <dt></dt>
+</dt>
 <dd>
-termsql <b>-i</b> MyCSVFile.CSV <b>-t</b> fancytable <b>-d</b> ',' <b>-1</b> <b>-o</b> mysqlite.db
-</dd>
-<dt></dt>
-<dd>
-(creates a new sqlite database from a CSV file. <b>-d</b> ',' tells termsql to use commata as delimiter. <b>-1</b> tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. <b>-t</b> fancytable sets the tablename to fancytable)
-</dd>
-<dt></dt>
-<dd>
-sensors | termsql "select COL2 from tbl where COL0='Core'"
-</dd>
-<dt></dt>
-<dd>
-(extract the temperature from all your CPU cores)
-</dd>
-<dt></dt>
-<dd>
-export LC_ALL=en_US;
-top <b>-b</b> | head | termsql <b>-1</b> <b>-H</b> 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]&gt;=25"
-</dd>
-<dt></dt>
-<dd>
-(termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). <b>-H</b> 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.)
-</dd>
-<dt></dt>
-<dd>
-export DISPLAY=$(ps aux | termsql "select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1")
-</dd>
-<dt></dt>
-<dd>
-(set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")
-</dd>
-<dt></dt>
-<dd>
-ls <b>-lha</b> /usr/bin/* | termsql <b>-w</b> <b>-r</b> 8 "select * from tbl order by COL8 desc"
-</dd>
-<dt></dt>
-<dd>
-(<b>-r</b> 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to <b>-w</b> the output looks nice on the command line)
+<tt>&gt; -r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line</tt>
 <p>
 </p>
 </dd>
@@ -338,7 +328,7 @@ ls <b>-lha</b> /usr/bin/* | termsql <b>-w</b> <b>-r</b> 8 "select * from tbl ord
 <p>This document was created by
 <a href="/man/man2html">man2html</a>,
 using the manual pages.<br>
-Time: 23:15:16 GMT, November 23, 2014
+Time: 13:22:48 GMT, November 24, 2014
 
 </p>
       </section>
