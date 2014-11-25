@@ -40,7 +40,7 @@ import locale
 
 locale.setlocale(locale.LC_ALL, '')
 
-VERSION = "0.3alpha"
+VERSION = "0.3"
 #configureable default values
 sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
@@ -171,6 +171,7 @@ def get_col_name(i):
 
 inserts = []
 
+#test if a certain number/value/string is compatible with type float
 def isfloat(value):
   try:
     locale.atof(value)
@@ -178,41 +179,44 @@ def isfloat(value):
   except ValueError:
     return False
 
-colprobs = {}
-def update_colprobs(col,data):
-    if not col in colprobs:
-        colprobs[col] = {}
-        colprobs[col]["INTEGER"] = True
-        colprobs[col]["REAL"] = True
-        colprobs[col]["TEXT"] = True
+col_properties = {}
+#this function is called for each row that gets inserted into a column,
+#and from that the data type and other information about the column is gathered
+def update_col_properties(col,data):
+    if not col in col_properties:
+        col_properties[col] = {}
+        col_properties[col]["INTEGER"] = True
+        col_properties[col]["REAL"] = True
+        col_properties[col]["TEXT"] = True
     if not data.isdigit():
-        colprobs[col]["INTEGER"] = False        
+        col_properties[col]["INTEGER"] = False        
     if not isfloat(data):
-        colprobs[col]["REAL"] = False
-    if "MAXLEN" not in colprobs[col] or len(data) > colprobs[col]["MAXLEN"]:
-        colprobs[col]["MAXLEN"] = len(data)
+        col_properties[col]["REAL"] = False
+    if "MAXLEN" not in col_properties[col] or len(data) > col_properties[col]["MAXLEN"]:
+        col_properties[col]["MAXLEN"] = len(data)
 
+#returns the SQL value type of a column
 def get_col_type(col):
-    if not col in colprobs:
+    if not col in col_properties:
         return "TEXT"
-    elif colprobs[col]["INTEGER"]:
+    elif col_properties[col]["INTEGER"]:
         return "INTEGER"
-    elif colprobs[col]["REAL"]:
+    elif col_properties[col]["REAL"]:
         return "REAL"
     return "TEXT"
 
 insert_count = 0
-#build sql string to insert row
+#build list for insert row and add to global inserts list
 def build_insert(row):
     insert = []
     c = 0
     for col in row:
         if merge != None and c > merge:
             insert[-1] = str(insert[-1]) + delimiter + str(col)
-            update_colprobs(merge,insert[-1])
+            update_col_properties(merge,insert[-1])
         else:
             insert.append(col)
-            update_colprobs(c,col)
+            update_col_properties(c,col)
         c += 1
     inserts.append(insert)
 
@@ -225,13 +229,15 @@ def get_col_names(row):
 
 max_count = 0    
 
-if infile != None:
+
+def traverse_input():
+    global max_count, insert_count
     #traverse input
     lines = infile.readlines()
     if offset_head > 0:
         del lines[:int(args.offset_head)]
 
-    if not args.line_as_column:
+    if not args.line_as_column: #this is the standard input traversal
         first_line = True
         for line in lines:
             if args.max_rows and insert_count >= int(args.max_rows):
@@ -248,13 +254,13 @@ if infile != None:
                 build_insert(row)
                 insert_count += 1
             first_line = False
-    else:
+    else: #this is the special input traversal for --line-as-column mode
         max_count = int(args.line_as_column)
         col_count = 0 
         while len(lines) > 0:
             row = []
             while len(lines) > 0:
-                row.append(lines.pop(0).strip())
+                row.append(lines.pop(0).strip()) #FIXME: should get rid of pop(0)
                 col_count += 1
                 if not int(args.line_as_column) > col_count:
                     col_count = 0
@@ -264,8 +270,12 @@ if infile != None:
             build_insert(row)
             insert_count += 1
 
-    if len(colprobs) < max_count:
-        max_count = len(colprobs)
+    if len(col_properties) < max_count:
+        max_count = len(col_properties)
+
+
+if infile != None:
+    traverse_input()
 
 temp = []
 for ins in inserts:
@@ -308,9 +318,8 @@ temp = []
 temp.extend('?' * (max_count))
 placeholder_str = ",".join(temp)
 
-if args.offset_tail and int(args.offset_tail) > 0:
+if args.offset_tail and int(args.offset_tail) > 0: #remove all the entries from the inserts list that can be ignored due to option --offset-tail
     del inserts[-int(args.offset_tail):]
-
 
 if max_count > 0:
     #execute inserts, fill table with row data
@@ -330,15 +339,13 @@ if calc != '':
 if queryfile_data != '':
    actual_query = queryfile_data + ';' + actual_query
 
+#create tempfile for queries
 temp_query_file = tempfile.NamedTemporaryFile(delete=False)
 temp_query_file.write(actual_query + ";")
 temp_query_file.close()
 
+#create tempfile for sqlite init file
 init_file = tempfile.NamedTemporaryFile(delete=False) #temporary file that we give sqlite for initializing settings such as mode
-
-column_width_string = ''
-for col in colprobs:
-    column_width_string = column_width_string + ' ' + str(colprobs[col]["MAXLEN"])
 
 if mode == 'insert':
     init_file.write("\n.mode \"" + mode + "\" "+table_name+"\n")
@@ -346,6 +353,10 @@ else:
     init_file.write("\n.mode \"" + mode + "\"\n")
 if mode == 'column':
     #init_file.write("\n.header yes\n")
+    #in -m column mode we want the column widths to be optimal and so we tell sqlite in the sqlite init file about the right width 
+    column_width_string = ''
+    for col in col_properties:
+        column_width_string = column_width_string + ' ' + str(col_properties[col]["MAXLEN"])
     init_file.write("\n.width "+column_width_string+"\n")
 if separator != '':
     init_file.write(".separator \"" + separator + "\"\n")
@@ -359,13 +370,11 @@ init_file.close()
 
 command_string = sqlite_cmd + ' -init ' + init_file.name + ' '  + sql_db_file
 
-#for row in c.execute(args.query):
-#    print '|'.join((item or '') for item in row )
-
 # echo " " | is a hack to prevent sqlite from getting into interactive model, maybe there is a more pythonic method
 shell('echo " " | ' + command_string)
 
+#remove temporary files
 os.unlink(init_file.name)
 os.unlink(temp_query_file.name)
 
-#print colprobs
+
