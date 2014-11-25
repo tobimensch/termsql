@@ -253,7 +253,7 @@ if infile != None:
         col_count = 0 
         while len(lines) > 0:
             row = []
-            while True:
+            while len(lines) > 0:
                 row.append(lines.pop(0).strip())
                 col_count += 1
                 if not int(args.line_as_column) > col_count:
