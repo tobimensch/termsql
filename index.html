@@ -55,8 +55,8 @@
 [-l [LINE_AS_COLUMN]] [-k [KEY_COLUMNS]] [-c [COLUMNS]]
 [--calc [CALC]] [-w] [-H [OFFSET_HEAD]] [-T [OFFSET_TAIL]]
 [-M [MAX_ROWS]] [-C] [-D] [-m [MODE]] [-r [MERGE]] [-x] [-a]
-[-i [INFILE]] [-o [OUTFILE]] [-q [QUERYFILE]] [-t [TABLE]]
-[-s [SQLITE]] [-v]
+[-i [INFILE]] [-o [OUTFILE]] [-f [FILE]] [-e] [-q [QUERYFILE]]
+[-t [TABLE]] [-s [SQLITE]] [-v]
 [query]
 </dd>
 </dl>
@@ -205,6 +205,22 @@ location/filename to use for sql database (by default
 a tempfile is used)
 </dd>
 <dt>
+<b>-f</b> [FILE], <b>--file</b> [FILE]</dt>
+<dd>
+write output to file instead of stdout. It's
+overwriting the whole file, and not just appending, so
+please be cautious
+</dd>
+<dt>
+<b>-e</b>, <b>--edit</b>
+</dt>
+<dd>
+writes to the input file instead of stdout. For this
+to work the input file has to be specified with the
+<b>-i</b>/--infile option. It's overwriting the whole file,
+and not just appending, so please be cautious
+</dd>
+<dt>
 <b>-q</b> [QUERYFILE], <b>--queryfile</b> [QUERYFILE]</dt>
 <dd>
 load complex query from file, queries on the
@@ -317,6 +333,13 @@ display version information
 </dt>
 <dd>
 <tt>&gt; counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.</tt>
+</dd>
+<dt>
+<b>--</b> termsql <b>-ei</b> .config/Bitcoin/Bitcoin-Qt.conf <b>-c</b> key,value <b>-d</b> = <b>-p</b> = <b>-x</b> "update tbl set value='true' where key='fMinimizeToTray'"
+<dt></dt>
+</dt>
+<dd>
+<tt>&gt; Demonstrates how you can use termsql to edit simple config files with key/value pairs. -i loads the config file as input and -e makes sure this same file is written to instead of stdout. Simply speaking: enabling edit mode. -d = sets the delimiter for splitting the input to = and -p = sets the separator for the output to = again, so that the output format matches the input format. -x appends a ";select * from tbl" to the user defined query, so that we get everything back that we put in. The user query is an SQL update statement which sets the value part of the key value pair to true, where the key is fMinimizeToTray. -c key,value allows us to use these convenient names instead of COL0 (key) and COL1 (value). Note that this approach may not always be perfect, for example in .config/Bitcoin/Bitcoin-Qt.conf there's a section line "[General]" which gets changed to "[General]=" after termsql is done with editing. Which may or may not be a problem depending on the program that uses the config file. It could easily be fixed with a tool like sed though.</tt>
 <p>
 </p>
 </dd>
@@ -354,7 +377,7 @@ display version information
 <p>This document was created by
 <a href="/man/man2html">man2html</a>,
 using the manual pages.<br>
-Time: 16:42:10 GMT, November 25, 2014</p>
+Time: 19:21:13 GMT, November 25, 2014</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
