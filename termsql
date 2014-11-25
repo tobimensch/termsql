@@ -229,17 +229,22 @@ def get_col_names(row):
 
 max_count = 0    
 
-
 def traverse_input():
-    global max_count, insert_count
+    global max_count, insert_count, offset_head
     #traverse input
-    lines = infile.readlines()
-    if offset_head > 0:
-        del lines[:int(args.offset_head)]
+    first_line = True
+    row = [] #declared in this scope becaues of --line-as-column
+    col_count = 0 #declared in this scope becaues of --line-as-column
+    while True:
+        line = infile.readline()
 
-    if not args.line_as_column: #this is the standard input traversal
-        first_line = True
-        for line in lines:
+        if not line:
+            break
+        if offset_head > 0:
+            offset_head -= 1
+            continue
+
+        if not args.line_as_column: #this is the standard input traversal
             if args.max_rows and insert_count >= int(args.max_rows):
                 break
             if delimiter != ' ':
@@ -254,19 +259,20 @@ def traverse_input():
                 build_insert(row)
                 insert_count += 1
             first_line = False
-    else: #this is the special input traversal for --line-as-column mode
-        max_count = int(args.line_as_column)
-        col_count = 0 
-        while len(lines) > 0:
-            row = []
-            while len(lines) > 0:
-                row.append(lines.pop(0).strip()) #FIXME: should get rid of pop(0)
-                col_count += 1
-                if not int(args.line_as_column) > col_count:
-                    col_count = 0
-                    break
+        else: #this is the special input traversal for --line-as-column mode
+            max_count = int(args.line_as_column)
+
+            row.append(line.rstrip('\r\n'))
+            col_count += 1
+            if col_count == int(args.line_as_column):
+                col_count = 0
+                build_insert(row)
+                insert_count += 1
+                row = []
             if args.max_rows and insert_count >= int(args.max_rows):
                 break
+
+    if args.line_as_column and len(row) > 0:
             build_insert(row)
             insert_count += 1
 
