@@ -30,10 +30,7 @@
 
       </header>
       <section>
-        <p></p>Manpage of TERMSQL
-
-
-<h1>
+        <h1>
 <a id="termsql" class="anchor" href="#termsql" aria-hidden="true"><span class="octicon octicon-link"></span></a>TERMSQL</h1>
 
 <p>Section: User Commands (1)<br>Updated: November 2014<br><a href="#index">Index</a>
@@ -44,7 +41,7 @@
 <h2>
 <a id="name" class="anchor" href="#name" aria-hidden="true"><span class="octicon octicon-link"></span></a>NAME</h2>
 
-<p>termsql - manual page for termsql 0.3alpha
+<p>termsql - manual page for termsql 0.3
 <a name="lbAC"> </a></p>
 
 <h2>
@@ -55,10 +52,11 @@
 <dl compact>
 <dt></dt>
 <dd>
-[-l [LINE_AS_COLUMN]] [-k [KEY_COLUMNS]] [-c [COLUMNS]] [-w]
-[-H [OFFSET_HEAD]] [-T [OFFSET_TAIL]] [-M [MAX_ROWS]] [-C] [-D]
-[-m [MODE]] [-r [MERGE]] [-x] [-a] [-i [INFILE]] [-o [OUTFILE]]
-[-q [QUERYFILE]] [-t [TABLE]] [-s [SQLITE]] [-v]
+[-l [LINE_AS_COLUMN]] [-k [KEY_COLUMNS]] [-c [COLUMNS]]
+[--calc [CALC]] [-w] [-H [OFFSET_HEAD]] [-T [OFFSET_TAIL]]
+[-M [MAX_ROWS]] [-C] [-D] [-m [MODE]] [-r [MERGE]] [-x] [-a]
+[-i [INFILE]] [-o [OUTFILE]] [-q [QUERYFILE]] [-t [TABLE]]
+[-s [SQLITE]] [-v]
 [query]
 </dd>
 </dl>
@@ -124,6 +122,13 @@ one or more columns can make up the primary key (i.e
 <b>-c</b> [COLUMNS], <b>--columns</b> [COLUMNS]</dt>
 <dd>
 set custom column names (ie. <b>-c</b> 'name,street,age')
+</dd>
+<dt>
+<b>--calc</b> [CALC]</dt>
+<dd>
+use sqlite as simple calculator, you can do multiple
+calculations separated by commata (i.e. "(5*109.05)/2
+, 345+789") In this mode stdin input is ignored
 </dd>
 <dt>
 <b>-w</b>, <b>--whitespace</b>
@@ -291,6 +296,20 @@ display version information
 </dt>
 <dd>
 <tt>&gt; -r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line</tt>
+</dd>
+<dt>
+<b>--</b> termsql <b>-m</b> line <b>--calc</b> 2+2,23423./123
+<dt></dt>
+</dt>
+<dd>
+<tt>&gt; To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use  quotes like this --calc "(2+2,23423./123). The -m line option beautifies the output.</tt>
+</dd>
+<dt>
+<b>--</b> cat <i>/etc/fstab</i> | termsql "select COUNT(*) from tbl where COL2='ext4'"
+<dt></dt>
+</dt>
+<dd>
+<tt>&gt; how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select.</tt>
 <p>
 </p>
 </dd>
@@ -328,9 +347,7 @@ display version information
 <p>This document was created by
 <a href="/man/man2html">man2html</a>,
 using the manual pages.<br>
-Time: 13:22:48 GMT, November 24, 2014
-
-</p>
+Time: 16:11:38 GMT, November 25, 2014</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
