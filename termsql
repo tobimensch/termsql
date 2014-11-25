@@ -75,6 +75,8 @@ epilog_more =  '''  -- termsql -i MyCSVFile.CSV -t fancytable -d ',' -1 -o mysql
      > To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use  quotes like this --calc "(2+2,23423./123)". The -m line option beautifies the output.
   -- cat /etc/fstab | termsql "select COUNT(*) from tbl where COL2='ext4'"
      > how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select. 
+  -- ps aux | termsql -m line -1 "select USER,COUNT(*) from tbl group by USER"
+     > counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.
 '''
 if not epilog_expanded:
     epilog_more = '''
