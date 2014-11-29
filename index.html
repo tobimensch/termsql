@@ -30,605 +30,321 @@
 
       </header>
       <section>
-        <h1>
-<a id="termsql" class="anchor" href="#termsql" aria-hidden="true"><span class="octicon octicon-link"></span></a>TERMSQL</h1>
+        <div>
+<table summary="Document Header" width="100%">
 
-<h2>
-<a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span class="octicon octicon-link"></span></a>SYNOPSIS</h2>
 
-<p><b>termsql</b> [-h] [-1] [-0] [-d DELIMITER] [-p SEPARATOR] [-l LINE_AS_COLUMN] [-k KEY_COLUMNS] [-c COLUMNS] [--calc CALC] [-w] [-H OFFSET_HEAD] [-T OFFSET_TAIL] [-M MAX_ROWS] [-C] [-D] [-m MODE] [-r MERGE] [-x] [-a] [-i INFILE] [-o OUTFILE] [-f FILE] [-e] [-q QUERYFILE] [-t TABLE] [-s SQLITE] [-v] [query]
-<a name="lbAD"> </a></p>
 
-<h2>
-<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>DESCRIPTION</h2>
+<tbody>
+<tr>
+<td>
+TERMSQL(1)</td>
+<td align="center">
+User's Reference Manual</td>
+<td align="right">
+TERMSQL(1)</td>
+</tr>
+</tbody>
+</table>
+<div>
+<h1 id="x4e414d45">
+<a id="name" class="anchor" href="#name" aria-hidden="true"><span class="octicon octicon-link"></span></a>NAME</h1> <b>termsql</b> — Convert text into SQL table and query it</div>
+<div>
+<h1 id="x53594e4f50534953">
+<a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span class="octicon octicon-link"></span></a>SYNOPSIS</h1>
+<table>
 
-<p>Convert text into SQL table and query it
-<a name="lbAE"> </a></p>
 
-<h2>
-<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>OPTIONS</h2>
+<tbody>
+<tr>
+<td>
+termsql</td>
+<td>
+[-h] [-1] [-0] [-d DELIMITER] [-p SEPARATOR] [-l LINE_AS_COLUMN] [-k KEY_COLUMNS] [-c COLUMNS] [--calc CALC] [-w] [-H OFFSET_HEAD] [-T OFFSET_TAIL] [-M MAX_ROWS] [-C] [-D] [-m MODE] [-r MERGE] [-x] [-a] [-i INFILE] [-o OUTFILE] [-f FILE] [-e] [-q QUERYFILE] [-t TABLE] [-s SQLITE] [-v] [query]</td>
+</tr>
+</tbody>
+</table>
+</div>
 
-<dl compact>
-<p>
-
-</p>
+<div>
+<h1 id="x4445534352495054494f4e">
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>DESCRIPTION</h1> Convert text into SQL table and query it</div>
+<div>
+<h1 id="x4f5054494f4e53">
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>OPTIONS</h1>
+<dl>
 <dt>
-<b>-h , --help</b>
-
-
-
-
+<b>-h</b>, <b>--help</b>
 </dt>
 <dd>
-show this help message and exit
-</dd>
+show this help message and exit</dd>
 <dt>
-<b>-1 , --head</b>
-
-
-
-
+<b>-1</b>, <b>--head</b>
 </dt>
 <dd>
-use first line/head(er) for column names
-</dd>
+use first line/head(er) for column names</dd>
 <dt>
-<b>-0 , --show-header</b>
-
-
-
-
+<b>-0</b>, <b>--show-header</b>
 </dt>
 <dd>
-show column names as header in output (not shown by default)
-</dd>
+show column names as header in output (not shown by default)</dd>
 <dt>
-<b>-d </b><i>[DELIMITER] , -</i><b>-delimiter </b><i>[DELIMITER]</i>
-
-
-
-
-
-
-
-
+<b>-d</b> <i>[DELIMITER]</i>, <b>--delimiter</b> <i>[DELIMITER]</i>
 </dt>
 <dd>
-custom delimiter (default is whitespace)
-</dd>
+custom delimiter (default is whitespace)</dd>
 <dt>
-<b>-p </b><i>[SEPARATOR] , -</i><b>-separator </b><i>[SEPARATOR]</i>
-
-
-
-
-
-
-
-
+<b>-p</b> <i>[SEPARATOR]</i>, <b>--separator</b> <i>[SEPARATOR]</i>
 </dt>
 <dd>
-set sqlite output field separator (default depends on output mode. ie. for list '|' is the default and for csv ',' is the default)
-</dd>
+set sqlite output field separator (default depends on output mode. ie. for list '|' is the default and for csv ',' is the default)</dd>
 <dt>
-<b>-l </b><i>[LINE_AS_COLUMN] , -</i><b>-line-as-column </b><i>[LINE_AS_COLUMN]</i>
-
-
-
-
-
-
-
-
+<b>-l</b> <i>[LINE_AS_COLUMN]</i>, <b>--line-as-column</b> <i>[LINE_AS_COLUMN]</i>
 </dt>
 <dd>
-each line of input is a whole column, next row begins after n lines
-</dd>
+each line of input is a whole column, next row begins after n lines</dd>
 <dt>
-<b>-k </b><i>[KEY_COLUMNS] , -</i><b>-key-columns </b><i>[KEY_COLUMNS]</i>
-
-
-
-
-
-
-
-
+<b>-k</b> <i>[KEY_COLUMNS]</i>, <b>--key-columns</b> <i>[KEY_COLUMNS]</i>
 </dt>
 <dd>
-one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)
-</dd>
+one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)</dd>
 <dt>
-<b>-c </b><i>[COLUMNS] , -</i><b>-columns </b><i>[COLUMNS]</i>
-
-
-
-
-
-
-
-
+<b>-c</b> <i>[COLUMNS]</i>, <b>--columns</b> <i>[COLUMNS]</i>
 </dt>
 <dd>
-set custom column names (ie. -c 'name,street,age')
-</dd>
+set custom column names (ie. -c 'name,street,age')</dd>
 <dt>
-<b>--calc </b><i>[CALC]</i>
-
-
-
-
+<b>--calc</b> <i>[CALC]</i>
 </dt>
 <dd>
-use sqlite as simple calculator, you can do multiple calculations separated by commata (i.e. "(5*109.05)/2 , 345+789") In this mode stdin input is ignored
-</dd>
+use sqlite as simple calculator, you can do multiple calculations separated by commata (i.e. "(5*109.05)/2 , 345+789") In this mode stdin input is ignored</dd>
 <dt>
-<b>-w , --whitespace</b>
-
-
-
-
+<b>-w</b>, <b>--whitespace</b>
 </dt>
 <dd>
-use whitespace as field separator (default is |). equal to mode column
-</dd>
+use whitespace as field separator (default is |). equal to mode column</dd>
 <dt>
-<b>-H </b><i>[OFFSET_HEAD] , -</i><b>-offset-head </b><i>[OFFSET_HEAD]</i>
-
-
-
-
-
-
-
-
+<b>-H</b> <i>[OFFSET_HEAD]</i>, <b>--offset-head</b> <i>[OFFSET_HEAD]</i>
 </dt>
 <dd>
-ignore first n lines of input
-</dd>
+ignore first n lines of input</dd>
 <dt>
-<b>-T </b><i>[OFFSET_TAIL] , -</i><b>-offset-tail </b><i>[OFFSET_TAIL]</i>
-
-
-
-
-
-
-
-
+<b>-T</b> <i>[OFFSET_TAIL]</i>, <b>--offset-tail</b> <i>[OFFSET_TAIL]</i>
 </dt>
 <dd>
-ignore last n lines of input
-</dd>
+ignore last n lines of input</dd>
 <dt>
-<b>-M </b><i>[MAX_ROWS] , -</i><b>-max-rows </b><i>[MAX_ROWS]</i>
-
-
-
-
-
-
-
-
+<b>-M</b> <i>[MAX_ROWS]</i>, <b>--max-rows</b> <i>[MAX_ROWS]</i>
 </dt>
 <dd>
-don't insert more than n rows into database
-</dd>
+don't insert more than n rows into database</dd>
 <dt>
-<b>-C , --dump-create-table</b>
-
-
-
-
+<b>-C</b>, <b>--dump-create-table</b>
 </dt>
 <dd>
-dump create table SQL
-</dd>
+dump create table SQL</dd>
 <dt>
-<b>-D , --dump</b>
-
-
-
-
+<b>-D</b>, <b>--dump</b>
 </dt>
 <dd>
-dump complete SQL to create table and content
-</dd>
+dump complete SQL to create table and content</dd>
 <dt>
-<b>-m </b><i>[MODE] , -</i><b>-mode </b><i>[MODE]</i>
-
-
-
-
-
-
-
-
+<b>-m</b> <i>[MODE]</i>, <b>--mode</b> <i>[MODE]</i>
 </dt>
 <dd>
-set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)
-</dd>
+set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)</dd>
 <dt>
-<b>-r </b><i>[MERGE] , -</i><b>-merge </b><i>[MERGE]</i>
-
-
-
-
-
-
-
-
+<b>-r</b> <i>[MERGE]</i>, <b>--merge</b> <i>[MERGE]</i>
 </dt>
 <dd>
-merges all columns from column n to the last one into one. This is useful when you have data like filenames with whitespaces in it, to prevent it from getting split by the delimiter. Note that counting starts from 0, therefore n=0 is the first column ...
-</dd>
+merges all columns from column n to the last one into one. This is useful when you have data like filenames with whitespaces in it, to prevent it from getting split by the delimiter. Note that counting starts from 0, therefore n=0 is the first column ...</dd>
 <dt>
-<b>-x , --select-all</b>
-
-
-
-
+<b>-x</b>, <b>--select-all</b>
 </dt>
 <dd>
-add final SELECT * FROM to user defined query
-</dd>
+add final SELECT * FROM to user defined query</dd>
 <dt>
-<b>-a , --append</b>
-
-
-
-
+<b>-a</b>, <b>--append</b>
 </dt>
 <dd>
-don't DROP TABLE instead just append data to existing table. If the existing table doesn't have enough columns it will be ALTERed accordingly, if possible
-</dd>
+don't DROP TABLE instead just append data to existing table. If the existing table doesn't have enough columns it will be ALTERed accordingly, if possible</dd>
 <dt>
-<b>-i </b><i>[INFILE] , -</i><b>-infile </b><i>[INFILE]</i>
-
-
-
-
-
-
-
-
+<b>-i</b> <i>[INFILE]</i>, <b>--infile</b> <i>[INFILE]</i>
 </dt>
 <dd>
-use file as input instead of stdin
-</dd>
+use file as input instead of stdin</dd>
 <dt>
-<b>-o </b><i>[OUTFILE] , -</i><b>-outfile </b><i>[OUTFILE]</i>
-
-
-
-
-
-
-
-
+<b>-o</b> <i>[OUTFILE]</i>, <b>--outfile</b> <i>[OUTFILE]</i>
 </dt>
 <dd>
-location/filename to use for sql database (by default a tempfile is used)
-</dd>
+location/filename to use for sql database (by default a tempfile is used)</dd>
 <dt>
-<b>-f </b><i>[FILE] , -</i><b>-file </b><i>[FILE]</i>
-
-
-
-
-
-
-
-
+<b>-f</b> <i>[FILE]</i>, <b>--file</b> <i>[FILE]</i>
 </dt>
 <dd>
-write output to file instead of stdout. It's overwriting the whole file, and not just appending, so please be cautious
-</dd>
+write output to file instead of stdout. It's overwriting the whole file, and not just appending, so please be cautious</dd>
 <dt>
-<b>-e , --edit</b>
-
-
-
-
+<b>-e</b>, <b>--edit</b>
 </dt>
 <dd>
-writes to the input file instead of stdout. For this to work the input file has to be specified with the -i/--infile option. It's overwriting the whole file, and not just appending, so please be cautious
-</dd>
+writes to the input file instead of stdout. For this to work the input file has to be specified with the -i/--infile option. It's overwriting the whole file, and not just appending, so please be cautious</dd>
 <dt>
-<b>-q </b><i>[QUERYFILE] , -</i><b>-queryfile </b><i>[QUERYFILE]</i>
-
-
-
-
-
-
-
-
+<b>-q</b> <i>[QUERYFILE]</i>, <b>--queryfile</b> <i>[QUERYFILE]</i>
 </dt>
 <dd>
-load complex query from file, queries on the commandline get executed last
-</dd>
+load complex query from file, queries on the commandline get executed last</dd>
 <dt>
-<b>-t </b><i>[TABLE] , -</i><b>-table </b><i>[TABLE]</i>
-
-
-
-
-
-
-
-
+<b>-t</b> <i>[TABLE]</i>, <b>--table</b> <i>[TABLE]</i>
 </dt>
 <dd>
-tablename (must be a valid sqlite tablename)
-</dd>
+tablename (must be a valid sqlite tablename)</dd>
 <dt>
-<b>-s </b><i>[SQLITE] , -</i><b>-sqlite </b><i>[SQLITE]</i>
-
-
-
-
-
-
-
-
+<b>-s</b> <i>[SQLITE]</i>, <b>--sqlite</b> <i>[SQLITE]</i>
 </dt>
 <dd>
-path to sqlite executable
-</dd>
+path to sqlite executable</dd>
 <dt>
-<b>-v , --version</b>
-
-
-
-
+<b>-v</b>, <b>--version</b>
 </dt>
 <dd>
-display version information
-</dd>
+display version information</dd>
 </dl>
+</div>
 
-<p></p><p></p>
-
-<p></p><p></p>
-
-<p></p><p>
-<a name="lbAF"> </a></p>
-
-<h2>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>USAGE</h2>
-
-<p></p><p></p>
-
-<p>By default termsql reads from stdin and converts each incoming line into a row
-it stores inside a sqlite database in a temporary file.
-</p><p></p>
-
-<p>It separates columns by whitespace, because on the command line most programs usually present
-information in the output in that way. You can supply option -d to change that behavior
-and split columns by any character or string of characters of your choosing.
-Option -l/--line-as-columns on the other hand splits columns by newlines, and expects
-a number by the user to know how many columns the table has.
-</p><p></p>
-
-<p>The most powerful part of termsql is that it allows users to query these newly created
-databases with the full power of sqlite.
-When no user query is supplied as last argument it defaults to "select * from tbl",
-as you can see from this the default name of the table is tbl. You can change that
-table name with the -t option.
-</p><p></p>
-
-<p>All sqlite SQL syntax like select/update/delete/group by/where/order by/limit and
-all sqlite functions such as date('now'), SUM(*) or ABS(X) can be used to modify the
-table and the output of termsql.
-</p><p></p>
-
-<p>The default output mode is the default output mode of sqlite, which is called list and
-separates columns by |. A nice output mode in a terminal is column, which you can
-activate with -m column or its synonymous option -w. -m csv and -m html output in the
-according formats. -m line lists one line per column in a key/value pair kind of fashion.
-Option -0/--show-header activates the header with column names in the output.
-</p><p></p>
-
-<p>Often the first line of input contains the column names and option -1/--head ensures that
-these names are used as the actual column names in the table. If you want to specify your
-own custom column names, you can use the -c/--columns option followed by a comma separated
-list of column names.
-By default columns are named by their position starting with COL0. User defined column names
-take precedence over column names automatically found using -1/--head. If you're using the
--1 option and -c at the same time and the header only contains 3 names, while you define 2
-names with the -c option and the total number of columns in the table is 5 the actual column
-names of the table would look something like this: "coption1","coption2","headername3","COL3","COL4".
-</p><p></p>
-
-<p>If you end up having column names with special characters in them it's good to know the sqlite
-syntax to escape column names like this "select [%CPU],[1k-blocks] from tbl". As you see wrapping
-column names in brackets can save the day.
-</p><p></p>
-
-<p>You may want to convert input into a permanent database, for that you simply use the -o option
-followed by the filename of the database.
-</p><p></p>
-
-<p>Instead of reading from stdin termsql can read from a file supplied with the -i option. If you
-make modifications to such input you may want to save it in the same file again. Option -e only
-works in conjunction with the -i option and automatically overwrites the input file with the
-new output. Make sure to check that the output is actually satisfying before you use this method.
-With the -f option you can supply a different file to write the output to.
-</p><p></p>
-
-<p>For looking at the internals of the SQL the options -m insert, -D and -C may be interesting. Mode
-insert outputs the result of select as a series of SQL insert statements.
--D dumps the complete table and data SQL, while -C only dumps the SQL the table was created with.
-</p><p></p>
-
-<p>When creating the database termsql detects for each column automatically the best datatype, so numbers
-will get stored as integer or float if possible.
-</p><p></p>
-
-<p>Option --calc X is a special mode that emulates "select X from tbl" and doesn't create a table or read
-input at all. You can do calculations like this termsql --calc "2+10,100/25" or you can use sqlite functions
-like this termsql --calc date('now').
-</p><p>
-<a name="lbAG"> </a></p>
-
-<h2>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>EXAMPLES</h2>
-
-<dl compact>
+<div>
+<h1 id="x5553414745">
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>USAGE</h1> By default termsql reads from stdin and converts each incoming line into a row it stores inside a sqlite database in a temporary file.<p>
+It separates columns by whitespace, because on the command line most programs usually present information in the output in that way. You can supply option -d to change that behavior and split columns by any character or string of characters of your choosing. Option -l/--line-as-columns on the other hand splits columns by newlines, and expects a number by the user to know how many columns the table has.</p>
 <p>
+The most powerful part of termsql is that it allows users to query these newly created databases with the full power of sqlite. When no user query is supplied as last argument it defaults to "select * from tbl", as you can see from this the default name of the table is tbl. You can change that table name with the -t option.</p>
+<p>
+All sqlite SQL syntax like select/update/delete/group by/where/order by/limit and all sqlite functions such as date('now'), SUM(*) or ABS(X) can be used to modify the table and the output of termsql.</p>
+<p>
+The default output mode is the default output mode of sqlite, which is called list and separates columns by |. A nice output mode in a terminal is column, which you can activate with -m column or its synonymous option -w. -m csv and -m html output in the according formats. -m line lists one line per column in a key/value pair kind of fashion. Option -0/--show-header activates the header with column names in the output.</p>
+<p>
+Often the first line of input contains the column names and option -1/--head ensures that these names are used as the actual column names in the table. If you want to specify your own custom column names, you can use the -c/--columns option followed by a comma separated list of column names. By default columns are named by their position starting with COL0. User defined column names take precedence over column names automatically found using -1/--head. If you're using the -1 option and -c at the same time and the header only contains 3 names, while you define 2 names with the -c option and the total number of columns in the table is 5 the actual column names of the table would look something like this: "coption1","coption2","headername3","COL3","COL4".</p>
+<p>
+If you end up having column names with special characters in them it's good to know the sqlite syntax to escape column names like this "select [%CPU],[1k-blocks] from tbl". As you see wrapping column names in brackets can save the day.</p>
+<p>
+You may want to convert input into a permanent database, for that you simply use the -o option followed by the filename of the database.</p>
+<p>
+Instead of reading from stdin termsql can read from a file supplied with the -i option. If you make modifications to such input you may want to save it in the same file again. Option -e only works in conjunction with the -i option and automatically overwrites the input file with the new output. Make sure to check that the output is actually satisfying before you use this method. With the -f option you can supply a different file to write the output to.</p>
+<p>
+For looking at the internals of the SQL the options -m insert, -D and -C may be interesting. Mode insert outputs the result of select as a series of SQL insert statements. -D dumps the complete table and data SQL, while -C only dumps the SQL the table was created with.</p>
+<p>
+When creating the database termsql detects for each column automatically the best datatype, so numbers will get stored as integer or float if possible.</p>
+<p>
+Option --calc X is a special mode that emulates "select X from tbl" and doesn't create a table or read input at all. You can do calculations like this termsql --calc "2+10,100/25" or you can use sqlite functions like this termsql --calc date('now').</p>
+<div>
+ </div>
+</div>
 
-</p>
+<div>
+<h1 id="x4558414d504c4553">
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>EXAMPLES</h1>
+<dl>
 <dt>
-<b>-$ ps aux | termsql "select * from tbl where COL0='root' limit 5"</b>
-</dt>
+-$ ps aux | termsql select * from tbl where COL0='root' limit 5</dt>
 <dd>
-<p>
-outputs 5 processes that are running as root
-</p>
-</dd>
+<div>
+ </div>
+outputs 5 processes that are running as root</dd>
 <dt>
-<b>-$ df | termsql -1 'select Filesystem from tbl order by [1K-blocks] desc limit 1'</b>
-</dt>
+-$ df | termsql -1 'select Filesystem from tbl order by [1K-blocks] desc limit 1'</dt>
 <dd>
-<p>
-returns the largest device
-</p>
-</dd>
+<div>
+ </div>
+returns the largest device</dd>
 <dt>
-<b>-$ cat /proc/cpuinfo | termsql "select COL2 from tbl where COL0='bogomips'"</b>
-</dt>
+-$ cat /proc/cpuinfo | termsql select COL2 from tbl where COL0='bogomips'</dt>
 <dd>
-<p>
-how many bogomips does your system have?
-</p>
-</dd>
+<div>
+ </div>
+how many bogomips does your system have?</dd>
 <dt>
-<b>-$ termsql --infile /etc/group -d ':' "select COL0 from tbl"</b>
-</dt>
+-$ termsql --infile /etc/group -d ':' select COL0 from tbl</dt>
 <dd>
-<p>
-read from file, use : as delimiter, shows all groups in /etc/group
-</p>
-</dd>
+<div>
+ </div>
+read from file, use : as delimiter, shows all groups in /etc/group</dd>
 <dt>
-<b>-$ termsql -i MyCSVFile.CSV -t fancytable -d ',' -1 -o mysqlite.db</b>
-</dt>
+-$ termsql -i MyCSVFile.CSV -t fancytable -d ',' -1 -o mysqlite.db</dt>
 <dd>
-<p>
-creates a new sqlite database from a CSV file. -d ',' tells termsql to use commata as delimiter. -1 tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. -t fancytable sets the tablename to fancytable
-</p>
-</dd>
+<div>
+ </div>
+creates a new sqlite database from a CSV file. -d ',' tells termsql to use commata as delimiter. -1 tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. -t fancytable sets the tablename to fancytable</dd>
 <dt>
-<b>-$ sensors | termsql "select COL2 from tbl where COL0='Core'"</b>
-</dt>
+-$ sensors | termsql select COL2 from tbl where COL0='Core'</dt>
 <dd>
-<p>
-extract the temperature from all your CPU cores
-</p>
-</dd>
+<div>
+ </div>
+extract the temperature from all your CPU cores</dd>
 <dt>
-<b>-$ export LC_ALL=en_US; top -b | head | termsql -1 -H 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]&gt;=25"</b>
-</dt>
+-$ export LC_ALL=en_US; top -b | head | termsql -1 -H 6 select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]&gt;=25</dt>
 <dd>
-<p>
-termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). -H 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.
-</p>
-</dd>
+<div>
+ </div>
+termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). -H 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.</dd>
 <dt>
-<b>-$ export DISPLAY=$(ps aux | termsql "select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1")</b>
-</dt>
+-$ export DISPLAY=$(ps aux | termsql select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1)</dt>
 <dd>
-<p>
-set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")
-</p>
-</dd>
+<div>
+ </div>
+set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")</dd>
 <dt>
-<b>-$ ls -lha /usr/bin/* | termsql -w -r 8 "select * from tbl order by COL8 desc"</b>
-</dt>
+-$ ls -lha /usr/bin/* | termsql -w -r 8 select * from tbl order by COL8 desc</dt>
 <dd>
-<p>
--r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line
-</p>
-</dd>
+<div>
+ </div>
+-r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line</dd>
 <dt>
-<b>-$ termsql -m line --calc 2+2,23423./123</b>
-</dt>
+-$ termsql -m line --calc 2+2,23423./123</dt>
 <dd>
-<p>
-To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use quotes like this --calc "(2+2,23423./123)". The -m line option beautifies the output.
-</p>
-</dd>
+<div>
+ </div>
+To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use quotes like this --calc "(2+2,23423./123)". The -m line option beautifies the output.</dd>
 <dt>
-<b>-$ cat /etc/fstab | termsql "select COUNT(*) from tbl where COL2='ext4'"</b>
-</dt>
+-$ cat /etc/fstab | termsql select COUNT(*) from tbl where COL2='ext4'</dt>
 <dd>
-<p>
-how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select.
-</p>
-</dd>
+<div>
+ </div>
+how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select.</dd>
 <dt>
-<b>-$ ps aux | termsql -m line -1 "select USER,COUNT(*) from tbl group by USER"</b>
-</dt>
+-$ ps aux | termsql -m line -1 select USER,COUNT(*) from tbl group by USER</dt>
 <dd>
-<p>
-counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.
-</p>
-</dd>
+<div>
+ </div>
+counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.</dd>
 <dt>
-<b>-$ termsql -ei .config/Bitcoin/Bitcoin-Qt.conf -c key,value -d = -p = -x "update tbl set value='true' where key='fMinimizeToTray'"</b>
-</dt>
+-$ termsql -ei .config/Bitcoin/Bitcoin-Qt.conf -c key,value -d = -p = -x update tbl set value='true' where key='fMinimizeToTray'</dt>
 <dd>
-<p>
-Demonstrates how you can use termsql to edit simple config files with key/value pairs. -i loads the config file as input and -e makes sure this same file is written to instead of stdout. Simply speaking: enabling edit mode. -d = sets the delimiter for splitting the input to = and -p = sets the separator for the output to = again, so that the output format matches the input format. -x appends a ";select * from tbl" to the user defined query, so that we get everything back that we put in. The user query is an SQL update statement which sets the value part of the key value pair to true, where the key is fMinimizeToTray. -c key,value allows us to use these convenient names instead of COL0 (key) and COL1 (value). Note that this approach may not always be perfect, for example in .config/Bitcoin/Bitcoin-Qt.conf there's a section line "[General]" which gets changed to "[General]=" after termsql is done with editing. Which may or may not be a problem depending on the program that uses the config file. It could easily be fixed with a tool like sed though.
-</p>
-</dd>
+<div>
+ </div>
+Demonstrates how you can use termsql to edit simple config files with key/value pairs. -i loads the config file as input and -e makes sure this same file is written to instead of stdout. Simply speaking: enabling edit mode. -d = sets the delimiter for splitting the input to = and -p = sets the separator for the output to = again, so that the output format matches the input format. -x appends a ";select * from tbl" to the user defined query, so that we get everything back that we put in. The user query is an SQL update statement which sets the value part of the key value pair to true, where the key is fMinimizeToTray. -c key,value allows us to use these convenient names instead of COL0 (key) and COL1 (value). Note that this approach may not always be perfect, for example in .config/Bitcoin/Bitcoin-Qt.conf there's a section line "[General]" which gets changed to "[General]=" after termsql is done with editing. Which may or may not be a problem depending on the program that uses the config file. It could easily be fixed with a tool like sed though.</dd>
 <dt>
-<b>-$ termsql -ei my.config -c key,value -d = -p = -x "delete from tbl where key IN ('entry1','entry2','entry3','entry4')"</b>
-</dt>
+-$ termsql -ei my.config -c key,value -d = -p = -x delete from tbl where key IN ('entry1','entry2','entry3','entry4')</dt>
 <dd>
-<p>
-Analogous to the previous example this one would find and delete the key/value pair entries with the keys entry1, entry2, entry3 and entry4. Using IN in a where clause you can specifiy a list to match against instead of just a single value. Everything else from the previous example also applies in this one.
-</p>
-<p>
-</p>
-</dd>
+<div>
+ </div>
+Analogous to the previous example this one would find and delete the key/value pair entries with the keys entry1, entry2, entry3 and entry4. Using IN in a where clause you can specifiy a list to match against instead of just a single value. Everything else from the previous example also applies in this one.</dd>
 </dl>
+</div>
+
+<table summary="Document Footer" width="100%">
+
+
+<tbody>
+<tr>
+<td>
+November Sat 29 2014</td>
+<td align="right">
+UNIX</td>
+</tr>
+</tbody>
+</table>
 
 <p></p>
-
-<hr>
-
-<p><a name="index"> </a></p><h2>
-<a id="index" class="anchor" href="#index" aria-hidden="true"><span class="octicon octicon-link"></span></a>Index</h2>
-
-<dl>
-<dt><a href="#lbAB">NAME</a></dt>
-<dd>
-</dd>
-<dt><a href="#lbAC">SYNOPSIS</a></dt>
-<dd>
-</dd>
-<dt><a href="#lbAD">DESCRIPTION</a></dt>
-<dd>
-</dd>
-<dt><a href="#lbAE">OPTIONS</a></dt>
-<dd>
-</dd>
-<dt><a href="#lbAF">USAGE</a></dt>
-<dd>
-</dd>
-<dt><a href="#lbAG">EXAMPLES</a></dt>
-<dd>
-</dd>
-</dl>
-
-<hr>
-
-<p>This document was created by
-<a href="/man/man2html">man2html</a>,
-using the manual pages.<br>
-Time: 04:44:02 GMT, November 29, 2014</p>
+</div>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
