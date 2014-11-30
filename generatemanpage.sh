@@ -1,4 +1,4 @@
 #/bin/sh
 export MORE_HELP=True
-help2man --include=manpage_additional_info --source=https://github.com/tobimensch/termsql -N ./termsql | gzip > termsql.1.gz
-man2html -r ./termsql.1.gz > termsql_manpage.html
+cli2man ./termsql -o auto --gzip --info-section examples -I manpage_additional_info
+cat termsql.1.gz | gunzip | mandoc -Thtml > termsql_manpage.html

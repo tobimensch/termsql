@@ -1,30 +1,30 @@
-[USAGE]
-
+.Sh USAGE
+.Pp
 By default termsql reads from stdin and converts each incoming line into a row
 it stores inside a sqlite database in a temporary file.
-
+.Pp
 It separates columns by whitespace, because on the command line most programs usually present
 information in the output in that way. You can supply option -d to change that behavior
 and split columns by any character or string of characters of your choosing.
 Option -l/--line-as-columns on the other hand splits columns by newlines, and expects
 a number by the user to know how many columns the table has.
-
+.Pp
 The most powerful part of termsql is that it allows users to query these newly created
 databases with the full power of sqlite.
 When no user query is supplied as last argument it defaults to "select * from tbl",
 as you can see from this the default name of the table is tbl. You can change that
 table name with the -t option.
-
+.Pp
 All sqlite SQL syntax like select/update/delete/group by/where/order by/limit and
 all sqlite functions such as date('now'), SUM(*) or ABS(X) can be used to modify the
 table and the output of termsql.
-
+.Pp
 The default output mode is the default output mode of sqlite, which is called list and
 separates columns by |. A nice output mode in a terminal is column, which you can
 activate with -m column or its synonymous option -w. -m csv and -m html output in the
 according formats. -m line lists one line per column in a key/value pair kind of fashion.
 Option -0/--show-header activates the header with column names in the output.
-
+.Pp
 Often the first line of input contains the column names and option -1/--head ensures that
 these names are used as the actual column names in the table. If you want to specify your
 own custom column names, you can use the -c/--columns option followed by a comma separated
@@ -34,27 +34,27 @@ take precedence over column names automatically found using -1/--head. If you're
 -1 option and -c at the same time and the header only contains 3 names, while you define 2
 names with the -c option and the total number of columns in the table is 5 the actual column
 names of the table would look something like this: "coption1","coption2","headername3","COL3","COL4".
-
+.Pp
 If you end up having column names with special characters in them it's good to know the sqlite
 syntax to escape column names like this "select [%CPU],[1k-blocks] from tbl". As you see wrapping
 column names in brackets can save the day.
-
+.Pp
 You may want to convert input into a permanent database, for that you simply use the -o option
 followed by the filename of the database.
-
+.Pp
 Instead of reading from stdin termsql can read from a file supplied with the -i option. If you
 make modifications to such input you may want to save it in the same file again. Option -e only
 works in conjunction with the -i option and automatically overwrites the input file with the
 new output. Make sure to check that the output is actually satisfying before you use this method.
 With the -f option you can supply a different file to write the output to.
-
+.Pp
 For looking at the internals of the SQL the options -m insert, -D and -C may be interesting. Mode
 insert outputs the result of select as a series of SQL insert statements.
 -D dumps the complete table and data SQL, while -C only dumps the SQL the table was created with.
-
+.Pp
 When creating the database termsql detects for each column automatically the best datatype, so numbers
 will get stored as integer or float if possible.
-
+.Pp
 Option --calc X is a special mode that emulates "select X from tbl" and doesn't create a table or read
 input at all. You can do calculations like this termsql --calc "2+10,100/25" or you can use sqlite functions
 like this termsql --calc date('now').
