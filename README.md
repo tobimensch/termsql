@@ -60,3 +60,21 @@ examples
 
 For detailed information about options and more examples see the [Manual](http://tobimensch.github.io/termsql)
 
+Roadmap
+=======
+
+- It's not commited to the repository yet, but soon termsql will support shorter SQL statements,
+  where "from tbl" and other repetitive text isn't required anymore.
+ - "select col0,col1 where col1='foo'" will work => "select col0,col1 from tbl where col1='foo'"
+ - "set foo='X' where bar='Y'" => "update tbl set foo='X' where bar='Y'" 
+ - Saving users some typing.
+ - Making commands more concise.
+ - from then on termsql will require the sqlparse module, but there's one bug in sqlparse and that has
+   to be fixed first.
+- type SQL commands without quotes
+ - termsql -i input.txt select col3
+ - quotes around the whole statement will continue to be recommended because you'll have to escape special charactes in the shell like this:
+  - termsql -i input.txt select col3 from tbl where col0="\'test  spaces\'" \; select col 1 from tbl
+
+
+
