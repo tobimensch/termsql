@@ -30,9 +30,7 @@
 
       </header>
       <section>
-        <p></p>
-
-<div>
+        <div>
 <table summary="Document Header" width="100%">
 
 
@@ -62,7 +60,7 @@ TERMSQL(1)</td>
 <td>
 termsql</td>
 <td>
-[-h] [-1] [-0] [-d DELIMITER] [-p SEPARATOR] [-l LINE_AS_COLUMN] [-k KEY_COLUMNS] [-c COLUMNS] [--calc CALC] [-w] [-H OFFSET_HEAD] [-T OFFSET_TAIL] [-M MAX_ROWS] [-C] [-D] [-m MODE] [-r MERGE] [-x] [-a] [-i INFILE] [-o OUTFILE] [-f FILE] [-e] [-q QUERYFILE] [-t TABLE] [-s SQLITE] [-v] [query]</td>
+[-h] [-1] [-0] [-d DELIMITER] [-p SEPARATOR] [-l LINE_AS_COLUMN] [-k KEY_COLUMNS] [-c COLUMNS] [--calc CALC] [-w] [-H OFFSET_HEAD] [-T OFFSET_TAIL] [-M MAX_ROWS] [-C] [-D] [-Q] [-m MODE] [-r MERGE] [-x] [-a] [-i INFILE] [-o OUTFILE] [-f FILE] [-e] [-q QUERYFILE] [-t TABLE] [-s SQLITE] [-v] [query query ...]</td>
 </tr>
 </tbody>
 </table>
@@ -151,6 +149,11 @@ dump create table SQL</dd>
 <dd>
 dump complete SQL to create table and content</dd>
 <dt>
+<b>-Q</b>, <b>--sql</b>
+</dt>
+<dd>
+outputs the full query, like it would be fed to SQlite</dd>
+<dt>
 <b>-m</b> <i>[MODE]</i>, <b>--mode</b> <i>[MODE]</i>
 </dt>
 <dd>
@@ -211,6 +214,8 @@ path to sqlite executable</dd>
 <dd>
 display version information</dd>
 </dl>
+<div>
+ </div>
 </div>
 
 <div>
@@ -250,86 +255,116 @@ Option --calc X is a special mode that emulates "select X from tbl" and doesn't 
 <dd>
 <div>
  </div>
-outputs 5 processes that are running as root</dd>
+outputs 5 processes that are running as root<div>
+ </div>
+</dd>
 <dt>
 -$ df | termsql -1 'select Filesystem from tbl order by [1K-blocks] desc limit 1'</dt>
 <dd>
 <div>
  </div>
-returns the largest device</dd>
+returns the largest device<div>
+ </div>
+</dd>
 <dt>
 -$ cat /proc/cpuinfo | termsql "select COL2 from tbl where COL0='bogomips'"</dt>
 <dd>
 <div>
  </div>
-how many bogomips does your system have?</dd>
+how many bogomips does your system have?<div>
+ </div>
+</dd>
 <dt>
 -$ termsql --infile /etc/group -d ':' "select COL0 from tbl"</dt>
 <dd>
 <div>
  </div>
-read from file, use : as delimiter, shows all groups in /etc/group</dd>
+read from file, use : as delimiter, shows all groups in /etc/group<div>
+ </div>
+</dd>
 <dt>
 -$ termsql -i MyCSVFile.CSV -t fancytable -d ',' -1 -o mysqlite.db</dt>
 <dd>
 <div>
  </div>
-creates a new sqlite database from a CSV file. -d ',' tells termsql to use commata as delimiter. -1 tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. -t fancytable sets the tablename to fancytable</dd>
+creates a new sqlite database from a CSV file. -d ',' tells termsql to use commata as delimiter. -1 tells termsql that the first line of the CSV file is not data and instead the column names and termsql creates database columns with those names accordingly. -t fancytable sets the tablename to fancytable<div>
+ </div>
+</dd>
 <dt>
 -$ sensors | termsql "select COL2 from tbl where COL0='Core'"</dt>
 <dd>
 <div>
  </div>
-extract the temperature from all your CPU cores</dd>
+extract the temperature from all your CPU cores<div>
+ </div>
+</dd>
 <dt>
 -$ export LC_ALL=en_US; top -b | head | termsql -1 -H 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]&gt;=25"</dt>
 <dd>
 <div>
  </div>
-termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). -H 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.</dd>
+termsql doesn't recognize numbers like "25,3" as numbers, but as strings. export LC_ALL=en_US ensures that top outputs numbers that are easy for termsql/sqlite to digest (ie. "25.3"). -H 6 makes termsql disregard the first 6 lines. We select only the processes with more than 25% cpu usage and output their PID,USER,COMMAND and %CPU.<div>
+ </div>
+</dd>
 <dt>
 -$ export DISPLAY=$(ps aux | termsql "select COL11 from tbl where COL10 like '%Xorg.bin%' limit 1")</dt>
 <dd>
 <div>
  </div>
-set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")</dd>
+set DISPLAY environment variable to what display X is running on right now, assuming that the X binary is called "Xorg.bin")<div>
+ </div>
+</dd>
 <dt>
 -$ ls -lha /usr/bin/* | termsql -w -r 8 "select * from tbl order by COL8 desc"</dt>
 <dd>
 <div>
  </div>
--r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line</dd>
+-r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line<div>
+ </div>
+</dd>
 <dt>
 -$ termsql -m line --calc 2+2,23423./123</dt>
 <dd>
 <div>
  </div>
-To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use quotes like this --calc "(2+2,23423./123)". The -m line option beautifies the output.</dd>
+To use termsql as simple a calculator with the power of sqlite behind it, use the --calc option and a commata separated list of calculations you want to do. Sometimes you may need to append a dot . to a number to make sqlite aware that it's supposed to do floating point calculation. If you want to use paranthesis you may also need to use quotes like this --calc "(2+2,23423./123)". The -m line option beautifies the output.<div>
+ </div>
+</dd>
 <dt>
 -$ cat /etc/fstab | termsql "select COUNT(*) from tbl where COL2='ext4'"</dt>
 <dd>
 <div>
  </div>
-how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select.</dd>
+how many devices do you have in your fstab that are using the ext4 filesystem? COUNT(*) simply outputs the total number of rows that the current select/where statement would select.<div>
+ </div>
+</dd>
 <dt>
 -$ ps aux | termsql -m line -1 "select USER,COUNT(*) from tbl group by USER"</dt>
 <dd>
 <div>
  </div>
-counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.</dd>
+counts the total number of processes that each user has running. -1 gets the column names from the first line, therefore we can use USER instead of COL0 in the SQL statement. "group by USER" groups the rows of with identical USER together and for that reason COUNT(*) returns the total number of rows (in this case processes) for each USER. -m line beautifies the output.<div>
+ </div>
+</dd>
 <dt>
 -$ termsql -ei .config/Bitcoin/Bitcoin-Qt.conf -c key,value -d = -p = -x "update tbl set value='true' where key='fMinimizeToTray'"</dt>
 <dd>
 <div>
  </div>
-Demonstrates how you can use termsql to edit simple config files with key/value pairs. -i loads the config file as input and -e makes sure this same file is written to instead of stdout. Simply speaking: enabling edit mode. -d = sets the delimiter for splitting the input to = and -p = sets the separator for the output to = again, so that the output format matches the input format. -x appends a ";select * from tbl" to the user defined query, so that we get everything back that we put in. The user query is an SQL update statement which sets the value part of the key value pair to true, where the key is fMinimizeToTray. -c key,value allows us to use these convenient names instead of COL0 (key) and COL1 (value). Note that this approach may not always be perfect, for example in .config/Bitcoin/Bitcoin-Qt.conf there's a section line "[General]" which gets changed to "[General]=" after termsql is done with editing. Which may or may not be a problem depending on the program that uses the config file. It could easily be fixed with a tool like sed though.</dd>
+Demonstrates how you can use termsql to edit simple config files with key/value pairs. -i loads the config file as input and -e makes sure this same file is written to instead of stdout. Simply speaking: enabling edit mode. -d = sets the delimiter for splitting the input to = and -p = sets the separator for the output to = again, so that the output format matches the input format. -x appends a ";select * from tbl" to the user defined query, so that we get everything back that we put in. The user query is an SQL update statement which sets the value part of the key value pair to true, where the key is fMinimizeToTray. -c key,value allows us to use these convenient names instead of COL0 (key) and COL1 (value). Note that this approach may not always be perfect, for example in .config/Bitcoin/Bitcoin-Qt.conf there's a section line "[General]" which gets changed to "[General]=" after termsql is done with editing. Which may or may not be a problem depending on the program that uses the config file. It could easily be fixed with a tool like sed though.<div>
+ </div>
+</dd>
 <dt>
 -$ termsql -ei my.config -c key,value -d = -p = -x "delete from tbl where key IN ('entry1','entry2','entry3','entry4')"</dt>
 <dd>
 <div>
  </div>
-Analogous to the previous example this one would find and delete the key/value pair entries with the keys entry1, entry2, entry3 and entry4. Using IN in a where clause you can specifiy a list to match against instead of just a single value. Everything else from the previous example also applies in this one.</dd>
+Analogous to the previous example this one would find and delete the key/value pair entries with the keys entry1, entry2, entry3 and entry4. Using IN in a where clause you can specifiy a list to match against instead of just a single value. Everything else from the previous example also applies in this one.<div>
+ </div>
+</dd>
 </dl>
+<div>
+ </div>
 </div>
 
 <table summary="Document Footer" width="100%">
@@ -338,7 +373,7 @@ Analogous to the previous example this one would find and delete the key/value p
 <tbody>
 <tr>
 <td>
-November 30, 2014</td>
+December 1, 2014</td>
 <td align="right">
 Linux 3.18.0-rc5+</td>
 </tr>
