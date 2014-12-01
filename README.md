@@ -60,6 +60,18 @@ examples
 
 For detailed information about options and more examples see the [Manual](http://tobimensch.github.io/termsql)
 
+vs awk
+======
+
+- awk can't create permanent sqlite databases
+- sqlite is efficient, fast and mature (not saying that awk isn't)
+- many people have worked with SQL before that aren't experts on awk
+- SQL tends to look very descriptive, which should make it easy to maintain code and fix bugs
+- termsql is designed from the start to be as intuitive as possible,
+  awk doesn't really strike the author of termsql as intuitive (that's a personal opinion and
+  not a fact).
+- termsql can output to CSV,HTML,insert,SQL dump,tcl,text,line,SQlite database
+
 Roadmap
 =======
 
@@ -80,13 +92,13 @@ Roadmap
 
 - add more examples to manual
 - support user scripts to preprocess column input
- - this would allow users to use tools like sed or anything they can think of to modify certain columns BEFORE it's inserted
+ - this would allow users to use tools like sed or anything they can think of to modify certain columns BEFORE they're inserted into the database
 
     termsql -i input.csv -d ':' --pp 3 my_script.sh "select * from tbl where col5>=100"
  
- - my_script.sh receives the column data, row number and the col number as input
+ - my_script.sh would receive the column data, the row number and the col number as input
 
-- get input from users how to improve further
+- get input from users how to improve further / what features to adds
 
 <!--
 - idea: support presets for certain well defined tasks
