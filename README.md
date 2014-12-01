@@ -63,10 +63,11 @@ For detailed information about options and more examples see the [Manual](http:/
 Roadmap
 =======
 
-- It's not commited to the repository yet, but soon termsql will support shorter SQL statements,
+- it's not commited to the repository yet, but soon termsql will support shorter SQL statements,
   where "from tbl" and other repetitive text isn't required anymore.
- - "select col0,col1 where col1='foo'" will work => "select col0,col1 from tbl where col1='foo'"
+ - "select col0,col1 where col1='foo'" => "select col0,col1 from tbl where col1='foo'"
  - "set foo='X' where bar='Y'" => "update tbl set foo='X' where bar='Y'" 
+ - "where col4 like '%sometext%' => "select * from tbl where col4 like '%sometext%'"
  - Saving users some typing.
  - Making commands more concise.
  - from then on termsql will require the sqlparse module, but there's one bug in sqlparse and that has
@@ -74,7 +75,32 @@ Roadmap
 - type SQL commands without quotes
  - termsql -i input.txt select col3
  - quotes around the whole statement will continue to be recommended because you'll have to escape special charactes in the shell like this:
-  - termsql -i input.txt select col3 from tbl where col0="\'test  spaces\'" \; select col 1 from tbl
 
+    termsql -i input.txt select col3 from tbl where col0="\'test  spaces\'" \; select col 1 from tbl
 
+- add more examples to manual
+- support user scripts to preprocess column input
+ - this would allow users to use tools like sed or anything they can think of to modify certain columns BEFORE it's inserted
+
+    termsql -i input.csv -d ':' --pp 3 my_script.sh "select * from tbl where col5>=100"
+ 
+ - my_script.sh receives the column data, row number and the col number as input
+
+- get input from users how to improve further
+
+<!--
+- idea: support presets for certain well defined tasks
+ - some presets could come with termsql, and the user could also define his own
+ - example of possible presets **(NOTE: all of this is hypothetical mockup code)**:
+
+``` shell
+    #preset for editing a INI style config
+    termsql -i config.txt --pre ini "set value='false' where key='getgoing'" 
+    #preset for running a script on a certain column before it's inserted into the database
+    termsql --pre mod_col 3 mycol_modding.sh "select col3 where table
+    #print list of all presets
+    termsql --print-presets
+
+```
+-->
 
