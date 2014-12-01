@@ -48,7 +48,7 @@ examples
 
     ls -lha /usr/bin/* | termsql -w -r 8 "select * from tbl order by COL8 desc"
 
--r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line
+> -r 8 merges the filenames into the 8th column. Then "order by COL8 desc" sorts them in reverse order. Due to -w the output looks nice on the command line
 
     ps aux | termsql -m line -1 "select USER,COUNT(*) from tbl group by USER"
 
