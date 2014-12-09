@@ -461,7 +461,7 @@ div.mandoc span.env		{ } /* Environment variables (Ev). */
 div.mandoc span.errno		{ } /* Error string (Er). */
 div.mandoc i.farg		{ font-weight: normal; } /* Function argument (Fa, Fn). */
 div.mandoc i.file		{ font-weight: normal; } /* File (Pa). */
-div.mandoc b.flag		{ font-style: normal; } /* Flag (Fl, Cm). */
+div.mandoc b.flag		{ font-weight: bold; } /* Flag (Fl, Cm). */
 div.mandoc b.fname		{ font-style: normal; } /* Function name (Fa, Fn, Rv). */
 div.mandoc i.ftype		{ font-weight: normal; } /* Function types (Ft, Fn). */
 div.mandoc b.includes		{ font-style: normal; } /* Header includes (In). */
