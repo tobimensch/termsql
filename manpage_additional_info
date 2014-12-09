@@ -1,5 +1,4 @@
 .Sh USAGE
-.Pp
 By default termsql reads from stdin and converts each incoming line into a row
 it stores inside a sqlite database in a temporary file.
 .Pp
