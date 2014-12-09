@@ -58,6 +58,7 @@ merge = None
 calc = ''
 filename = '' #by default termsql writes to stdout, but if the user sets a filename we write there instead
 show_header = False
+drop_table = True #by default any existing table by the same name is dropped
 
 epilog_expanded = False
 if os.environ.get('MORE_HELP') == 'True':
@@ -100,7 +101,7 @@ parser = argparse.ArgumentParser(description='Convert text into SQL table and qu
                         read from file, use : as delimiter, shows all groups in /etc/group
 '''+epilog_more
 )
-parser.add_argument("query", nargs='?', default='', help="SQL Query string")
+parser.add_argument("query", nargs='*', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-0", "--show-header", help="show column names as header in output (not shown by default)", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is whitespace)") 
@@ -115,10 +116,11 @@ parser.add_argument("-T","--offset-tail", nargs='?', help="ignore last n lines o
 parser.add_argument("-M","--max-rows", nargs='?', help="don't insert more than n rows into database")
 parser.add_argument("-C","--dump-create-table", help="dump create table SQL",action="store_true")
 parser.add_argument("-D","--dump", help="dump complete SQL to create table and content",action="store_true")
+parser.add_argument("-Q","--sql", help="outputs the full query, like it would be fed to SQlite", action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
 parser.add_argument("-r","--merge", nargs='?', help="merges all columns from column n to the last one into one. This is useful when you have data like filenames with whitespaces in it, to prevent it from getting split by the delimiter. Note that counting starts from 0, therefore n=0 is the first column ...")
 parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query",action="store_true")
-parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existing table. If the existing table doesn't have enough columns it will be ALTERed accordingly, if possible",action="store_true")
+parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existing table. Assumes existing table is compatible.",action="store_true")
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-f","--file", nargs='?', help="write output to file instead of stdout. It's overwriting the whole file, and not just appending, so please be cautious")
@@ -169,6 +171,8 @@ if args.queryfile:
     queryfile_data = open(args.queryfile).read()
 if args.show_header:
     show_header = True
+if args.append:
+    drop_table = False
 if args.version:
     print VERSION
     exit(0)   
@@ -332,9 +336,10 @@ conn = sqlite3.connect(sql_db_file)
 conn.text_factory = str
 c = conn.cursor()
 
-c.execute("drop table if exists \""+table_name+"\";")
-#create database and databasefile
+if drop_table:
+    c.execute("drop table if exists \""+table_name+"\";")
 
+#create database and databasefile
 if max_count > 0:
     c.execute(create_table_string)
     if args.dump_create_table:
@@ -352,8 +357,19 @@ if max_count > 0:
     #execute inserts, fill table with row data
     c.executemany('insert into tbl values ('+placeholder_str+')', inserts)
     conn.commit()
-                     
-actual_query = args.query
+
+
+def to_temp_file(s):
+    t = tempfile.NamedTemporaryFile(delete=False)
+    t.write(s)
+    t.close()
+    return t                      
+
+def remove_temp_file(t):
+    os.unlink(t.name)
+
+actual_query = ' '.join(args.query)
+
 if max_count > 0:
     if actual_query == "" and queryfile_data == '':
         actual_query = "select * from \""+table_name+"\""
@@ -367,9 +383,11 @@ if queryfile_data != '':
    actual_query = queryfile_data + ';' + actual_query
 
 #create tempfile for queries
-temp_query_file = tempfile.NamedTemporaryFile(delete=False)
-temp_query_file.write(actual_query + ";")
-temp_query_file.close()
+temp_query_file = to_temp_file(actual_query + ";")
+
+if args.sql:
+    print actual_query +";"
+    exit(0)
 
 #create tempfile for sqlite init file
 init_file = tempfile.NamedTemporaryFile(delete=False) #temporary file that we give sqlite for initializing settings such as mode
@@ -406,7 +424,7 @@ if filename != '':
 shell('echo " " | ' + command_string)
 
 #remove temporary files
-os.unlink(init_file.name)
-os.unlink(temp_query_file.name)
+remove_temp_file(init_file)
+remove_temp_file(temp_query_file)
 
 
