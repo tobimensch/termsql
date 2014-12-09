@@ -339,12 +339,12 @@ c = conn.cursor()
 if drop_table:
     c.execute("drop table if exists \""+table_name+"\";")
 
-#create database and databasefile
-if max_count > 0:
-    c.execute(create_table_string)
-    if args.dump_create_table:
-        print create_table_string
-        query_off = True
+    #create database and databasefile
+    if max_count > 0:
+        c.execute(create_table_string)
+        if args.dump_create_table:
+            print create_table_string
+            query_off = True
 
 temp = []
 temp.extend('?' * (max_count))
