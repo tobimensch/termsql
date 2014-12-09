@@ -5,7 +5,7 @@ it stores inside a sqlite database in a temporary file.
 It separates columns by whitespace, because on the command line most programs usually present
 information in the output in that way. You can supply option -d to change that behavior
 and split columns by any character or string of characters of your choosing.
-Option -l/--line-as-columns on the other hand splits columns by newlines, and expects
+Option -l/--line-as-column on the other hand splits columns by newlines, and expects
 a number by the user to know how many columns the table has.
 .Pp
 The most powerful part of termsql is that it allows users to query these newly created
