@@ -305,8 +305,7 @@ def traverse_input():
 
 if infile != None:
     traverse_input()
-
-infile.close() #at this point this file shouldn't be open anymore
+    infile.close() #at this point this file shouldn't be open anymore
 
 temp = []
 for ins in inserts:
