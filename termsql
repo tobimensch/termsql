@@ -354,7 +354,7 @@ if args.offset_tail and int(args.offset_tail) > 0: #remove all the entries from 
 
 if max_count > 0:
     #execute inserts, fill table with row data
-    c.executemany('insert into tbl values ('+placeholder_str+')', inserts)
+    c.executemany('insert into '+table_name+' values ('+placeholder_str+')', inserts)
     conn.commit()
 
 
