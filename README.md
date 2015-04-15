@@ -99,6 +99,8 @@ Roadmap
  - my_script.sh would receive the column data, the row number and the col number as input
 
 - get input from users how to improve further / what features to adds
+- prepare source/make packages for different distributions and OSs
+ - help/contributions welcome!
 
 <!--
 - idea: support presets for certain well defined tasks
