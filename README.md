@@ -90,29 +90,29 @@ Roadmap
 
 - it's not commited to the repository yet, but soon termsql will support shorter SQL statements,
   where "from tbl" and other repetitive text isn't required anymore.
- - "select col0,col1 where col1='foo'" => "select col0,col1 from tbl where col1='foo'"
-  - this particular feature is now commited and working given that you have sqlparse module version 0.1.15 and up
- - "set foo='X' where bar='Y'" => "update tbl set foo='X' where bar='Y'" 
- - "where col4 like '%sometext%' => "select * from tbl where col4 like '%sometext%'"
- - Saving users some typing.
- - Making commands more concise.
+  - "select col0,col1 where col1='foo'" => "select col0,col1 from tbl where col1='foo'"
+    - this particular feature is now commited and working given that you have sqlparse module version 0.1.15 and up
+  - "set foo='X' where bar='Y'" => "update tbl set foo='X' where bar='Y'" 
+  - "where col4 like '%sometext%' => "select * from tbl where col4 like '%sometext%'"
+  - Saving users some typing.
+  - Making commands more concise.
 - type SQL commands without quotes
- - termsql -i input.txt select col3
- - quotes around the whole statement will continue to be recommended because you'll have to escape special charactes in the shell like this:
+  - termsql -i input.txt select col3
+  - quotes around the whole statement will continue to be recommended because you'll have to escape special charactes in the shell like this:
 
     termsql -i input.txt select col3 from tbl where col0="\'test  spaces\'" \; select col 1 from tbl
 
 - add more examples to manual
 - support user scripts to preprocess column input
- - this would allow users to use tools like sed or anything they can think of to modify certain columns BEFORE they're inserted into the database
+  - this would allow users to use tools like sed or anything they can think of to modify certain columns BEFORE they're inserted into the database
 
     termsql -i input.csv -d ':' --pp 3 my_script.sh "select * from tbl where col5>=100"
  
- - my_script.sh would receive the column data, the row number and the col number as input
+  - my_script.sh would receive the column data, the row number and the col number as input
 
 - get input from users how to improve further / what features to adds
 - prepare source/make packages for different distributions and OSs
- - help/contributions welcome!
+  - help/contributions welcome!
 
 <!--
 - idea: support presets for certain well defined tasks
