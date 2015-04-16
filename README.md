@@ -10,6 +10,19 @@ install
 run:
   sudo python setup.py install
 
+Termsql now supports shorter and more convenient sql statements given the sqlparse module from https://pypi.python.org/pypi/sqlparse/ version 0.1.15 or higher is installed.
+
+    termsql "select col0,col1 from tbl"
+    #is equal to:
+    termsql select col0,col1
+    
+    termsql -m line -1 "select USER,COUNT(*) from tbl group by USER"
+    #is equal to:
+    termsql -m line -1 "select USER,COUNT(*) group by USER"
+
+Therefore installing the sqlparse module (which is tiny anyway) from https://pypi.python.org/pypi/sqlparse/ or
+https://github.com/andialbrecht/sqlparse is highly recommended. At least if you want to save yourself some typing.
+
 learn more
 ==========
 
