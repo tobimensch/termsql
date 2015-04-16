@@ -38,6 +38,18 @@ import os
 import sqlite3
 import locale
 
+try:
+    import sqlparse
+except ImportError:
+    sqlformat = False
+else:
+    if sqlparse.__version__ > "0.1.14":
+        sqlformat = True
+    else:
+        sqlformat = False
+#sqlformat depends on python sqlparser/sqlformat from https://pypi.python.org/pypi/sqlparse
+
+
 locale.setlocale(locale.LC_ALL, '')
 
 VERSION = "0.3"
@@ -368,6 +380,52 @@ def remove_temp_file(t):
     os.unlink(t.name)
 
 actual_query = ' '.join(args.query)
+
+#IDEA: expand the user supplied query so that "from table_name" is automagically inserted
+#- select * [from tbl] where/order by
+# - not easy, as * can be complex, also what comes after [] isn't clear either, can be any number of things?! -- actually that's one of he most realistic ways of solving this
+# - SOLVED: using sqlparser/sqlformat from pypi
+# - to parse for the stuff that comes after 
+#- update [table_name] set col0...
+# - easy
+#- insert [into table_name] values()
+# - easy
+#- delete [from table_name] where
+# - easy
+#- alter [table table_name] ..
+# - also easy
+#but even for the easy ones there are probably corner cases, so this feature might break something down the line ... who knows
+
+
+actual_query = actual_query.lstrip()
+if actual_query != '' and sqlformat:
+    #first find out the query type i.e. select
+    query_type = actual_query.split(' ')[0]
+    if query_type.lower() == "select":
+        #use sqlparse/sqlformat
+        out = sqlparse.format(actual_query,reindent=True)
+        s = ''
+        select_complete = False
+        from_inserted = False
+        from_ok = False
+        for line in out.split('\n'):
+            if select_complete:
+                s += " "+line.lstrip()
+            elif line.lower().startswith("select") or line.startswith(' '):
+                s += line.lstrip()
+            else:
+                if line.lower().startswith("from"):
+                    #no need to insert from when there's one already
+                    s += " "+line+" "
+                    from_ok = True
+                elif not from_ok and not from_inserted:
+                    s += " from "+table_name+" "
+                    s += line
+                    from_inserted = True
+                select_complete = True
+        if not select_complete:
+            s += " from "+table_name+" "
+        actual_query = s
 
 if max_count > 0:
     if actual_query == "" and queryfile_data == '':
