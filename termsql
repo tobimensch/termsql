@@ -186,7 +186,7 @@ if args.show_header:
 if args.append:
     drop_table = False
 if args.version:
-    print VERSION
+    print(VERSION)
     exit(0)   
 
 #simplify subprocess.call
@@ -354,7 +354,7 @@ if drop_table:
     if max_count > 0:
         c.execute(create_table_string)
         if args.dump_create_table:
-            print create_table_string
+            print(create_table_string)
             query_off = True
 
 temp = []
@@ -371,7 +371,7 @@ if max_count > 0:
 
 
 def to_temp_file(s):
-    t = tempfile.NamedTemporaryFile(delete=False)
+    t = tempfile.NamedTemporaryFile('w+',delete=False)
     t.write(s)
     t.close()
     return t                      
@@ -443,11 +443,11 @@ if queryfile_data != '':
 temp_query_file = to_temp_file(actual_query + ";")
 
 if args.sql:
-    print actual_query +";"
+    print(actual_query +";")
     exit(0)
 
 #create tempfile for sqlite init file
-init_file = tempfile.NamedTemporaryFile(delete=False) #temporary file that we give sqlite for initializing settings such as mode
+init_file = tempfile.NamedTemporaryFile('w+',delete=False) #temporary file that we give sqlite for initializing settings such as mode
 
 if mode == 'insert':
     init_file.write("\n.mode \"" + mode + "\" "+table_name+"\n")
