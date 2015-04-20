@@ -1,14 +1,19 @@
-termsql
+TERMSQL
 =======
 
 Convert text from a file or from stdin into SQL table and query it instantly. Uses sqlite as backend.
 The idea is to make SQL into a tool on the command line or in scripts.
 
-install
+Install
 =======
 
-run:
-  sudo python setup.py install
+Requirements:
+ - python
+ - sqlite3
+ - sqlparse module 0.1.15 and up from https://github.com/andialbrecht/sqlparse (optional)
+
+To install termsql open a terminal and run:
+    sudo python setup.py install
 
 Termsql now supports shorter and more convenient sql statements given the sqlparse module from https://pypi.python.org/pypi/sqlparse/ version 0.1.15 or higher is installed.
 
@@ -23,17 +28,17 @@ Termsql now supports shorter and more convenient sql statements given the sqlpar
 Therefore installing the sqlparse module (which is tiny anyway) from https://pypi.python.org/pypi/sqlparse/ or
 https://github.com/andialbrecht/sqlparse is highly recommended. At least if you want to save yourself some typing.
 
-learn more
+Learn more
 ==========
 
 always helpful is:
-  termsql --help
+    termsql --help
   
 and also:
-  man termsql
+    man termsql
   
 Online manual:
-  http://tobimensch.github.io/termsql
+    http://tobimensch.github.io/termsql
 
 So what can it do?
 ==================
@@ -48,7 +53,7 @@ So what can it do?
 - creates string/integer/float column types automatically
 - gives you the syntax and power of SQL on the command line
 
-examples
+Examples
 ========
 
     export LC_ALL=en_US; top -b | head | termsql -1 -H 6 "select [PID],[USER],[COMMAND],[%CPU] from tbl where [%CPU]>=25"
@@ -73,7 +78,7 @@ examples
 
 For detailed information about options and more examples see the [Manual](http://tobimensch.github.io/termsql)
 
-vs awk
+Vs awk
 ======
 
 - awk can't create permanent sqlite databases
@@ -84,6 +89,23 @@ vs awk
   awk doesn't really strike the author of termsql as intuitive (that's a personal opinion and
   not a fact).
 - termsql can output to CSV,HTML,insert,SQL dump,tcl,text,line,SQlite database
+
+Contribute
+==========
+
+You like termsql and want to help in some way? Then why don't you tell others about it and show them how
+they can use it. Post your termsql usecases and ideas on twitter, facebook, google+, your-favorite-social-media,
+your blog or website. Making termsql more popular is a great contribution.
+
+Another possible way to contribute is to help with improvement or translation of the documentation.
+
+It would also be great, if people create packages for their own distribution or file bugreports
+for their distribution, so that termsql will be available in their favorite (Linux-)distribution.
+
+Of course contributing code/patches is also welcome, look at the roadmap below or at the issues tracker on github
+for ideas on what to do or come up with your own ideas. Forking termsql is a great way to start as well.
+
+Want to contribute by reporting a problem/bug? Feel free to use [the issue tracker](https://github.com/tobimensch/termsql/issues).
 
 Roadmap
 =======
