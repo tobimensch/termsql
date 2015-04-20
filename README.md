@@ -13,6 +13,7 @@ Requirements:
  - sqlparse module 0.1.15 and up from https://github.com/andialbrecht/sqlparse (optional)
 
 To install termsql open a terminal and run:
+
     sudo python setup.py install
 
 Termsql now supports shorter and more convenient sql statements given the sqlparse module from https://pypi.python.org/pypi/sqlparse/ version 0.1.15 or higher is installed.
@@ -32,12 +33,15 @@ Learn more
 ==========
 
 always helpful is:
+
     termsql --help
   
 and also:
+
     man termsql
   
 Online manual:
+
     http://tobimensch.github.io/termsql
 
 So what can it do?
