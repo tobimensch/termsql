@@ -42,7 +42,7 @@ and also:
   
 Online manual:
 
-    http://tobimensch.github.io/termsql
+  http://tobimensch.github.io/termsql
 
 So what can it do?
 ==================
