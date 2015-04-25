@@ -273,8 +273,8 @@ def traverse_input():
     global max_count, insert_count, offset_head
     #traverse input
     first_line = True
-    row = [] #declared in this scope becaues of --line-as-column
-    col_count = 0 #declared in this scope becaues of --line-as-column
+    row = [] #declared in this scope because of --line-as-column
+    col_count = 0 #declared in this scope because of --line-as-column
     while True:
         line = infile.readline()
 
