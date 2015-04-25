@@ -37,6 +37,7 @@ import tempfile
 import os
 import sqlite3
 import locale
+import re
 
 try:
     import sqlparse
