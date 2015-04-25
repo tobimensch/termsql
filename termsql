@@ -325,13 +325,17 @@ for ins in inserts:
     temp.append(ins)
 inserts = temp
 
+colnames_str=''
 #create create database string
 if max_count > 0:
     create_table_string =  "create table \""+table_name+"\"("
     for x in range(0,max_count):
         if x > 0:
             create_table_string += ", "
-        create_table_string += '"'+ get_col_name(x) + '"' + " " + get_col_type(x)
+            colnames_str += ","
+        colname=get_col_name(x)
+        create_table_string += '"'+ colname + '"' + " " + get_col_type(x)
+        colnames_str+='['+colname+']'
     if len(key_columns) > 0:
         create_table_string += ", PRIMARY KEY ("+','.join(key_columns)+")"
     create_table_string += ");"
@@ -366,7 +370,7 @@ if args.offset_tail and int(args.offset_tail) > 0: #remove all the entries from 
 
 if max_count > 0:
     #execute inserts, fill table with row data
-    c.executemany('insert into '+table_name+' values ('+placeholder_str+')', inserts)
+    c.executemany('insert into '+table_name+'('+colnames_str+') values ('+placeholder_str+')', inserts)
     conn.commit()
 
 
