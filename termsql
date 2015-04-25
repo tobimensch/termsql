@@ -58,6 +58,7 @@ sqlite_cmd = 'sqlite3'
 table_name = 'tbl'
 sql_db_file = ''
 delimiter = ' '
+regex_delimiter = None
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
 columns = ''
@@ -116,7 +117,8 @@ parser = argparse.ArgumentParser(description='Convert text into SQL table and qu
 parser.add_argument("query", nargs='*', default='', help="SQL Query string")
 parser.add_argument("-1", "--head", help="use first line/head(er) for column names", action="store_true")
 parser.add_argument("-0", "--show-header", help="show column names as header in output (not shown by default)", action="store_true")
-parser.add_argument("-d", "--delimiter",  nargs='?', help="custom delimiter (default is whitespace)") 
+parser.add_argument("-d", "--delimiter",  nargs='?', help="custom literal delimiter (default is whitespace)")
+parser.add_argument("-g", "--regex-delimiter",  nargs='?', help="custom regex based delimiter (default is whitespace)")
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default depends on output mode. ie. for list '|' is the default and for csv ',' is the default) ")
 parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input is a whole column, next row begins after n lines")
 parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)")
@@ -149,6 +151,8 @@ if args.mode:
     mode = args.mode.lower()
 if args.delimiter:
     delimiter = args.delimiter
+if args.regex_delimiter:
+    regex_delimiter = args.regex_delimiter
 if args.separator:
     separator = args.separator
 if args.whitespace:
@@ -282,7 +286,9 @@ def traverse_input():
         if not args.line_as_column: #this is the standard input traversal
             if args.max_rows and insert_count >= int(args.max_rows):
                 break
-            if delimiter != ' ':
+            if regex_delimiter != None:
+                row = re.split(regex_delimiter,line.rstrip('\r\n').lstrip())
+            elif delimiter != ' ':
                 row = line.rstrip('\r\n').split(delimiter)
             else:
                 row = line.split()        
