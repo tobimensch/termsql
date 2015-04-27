@@ -442,7 +442,7 @@ if actual_query != '' and sqlformat:
     elif query_type.lower() == "set":
         actual_query = "update "+table_name+" "+actual_query
     elif query_type.lower() == "count":
-        actual_query = "select count(*) from "+table_name
+        actual_query = "select count(*) from "+table_name+" "+actual_query[5:]
 
 if max_count > 0:
     if actual_query == "" and queryfile_data == '':
