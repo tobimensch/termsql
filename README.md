@@ -114,16 +114,19 @@ Want to contribute by reporting a problem/bug? Feel free to use [the issue track
 Roadmap
 =======
 
-- it's not commited to the repository yet, but soon termsql will support shorter SQL statements,
+- ~~it's not commited to the repository yet~~, but soon termsql will support shorter SQL statements,
   where "from tbl" and other repetitive text isn't required anymore.
   - "select col0,col1 where col1='foo'" => "select col0,col1 from tbl where col1='foo'"
     - this particular feature is now commited and working given that you have sqlparse module version 0.1.15 and up
   - "set foo='X' where bar='Y'" => "update tbl set foo='X' where bar='Y'" 
+    - DONE
   - "where col4 like '%sometext%' => "select * from tbl where col4 like '%sometext%'"
+    - DONE
   - Saving users some typing.
   - Making commands more concise.
 - type SQL commands without quotes
   - termsql -i input.txt select col3
+    - DONE
   - quotes around the whole statement will continue to be recommended because you'll have to escape special charactes in the shell like this:
 
     termsql -i input.txt select col3 from tbl where col0="\'test  spaces\'" \; select col 1 from tbl
