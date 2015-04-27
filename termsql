@@ -437,6 +437,12 @@ if actual_query != '' and sqlformat:
         if not select_complete:
             s += " from "+table_name+" "
         actual_query = s
+    elif query_type.lower() in ["where","order","group","limit"]:
+        actual_query = "select * from "+table_name+" "+actual_query
+    elif query_type.lower() == "set":
+        actual_query = "update "+table_name+" "+actual_query
+    elif query_type.lower() == "count":
+        actual_query = "select count(*) from "+table_name
 
 if max_count > 0:
     if actual_query == "" and queryfile_data == '':
