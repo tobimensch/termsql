@@ -411,7 +411,11 @@ actual_query = ' '.join(args.query)
 actual_query = actual_query.lstrip()
 if actual_query != '' and sqlformat:
     #first find out the query type i.e. select
-    query_type = actual_query.split(' ')[0]
+    splt = actual_query.split(' ')
+    query_type = splt[0]
+    next_keyword = ''
+    if len(splt) > 1:
+        next_keyword = splt[1]
     if query_type.lower() == "select":
         #use sqlparse/sqlformat
         out = sqlparse.format(actual_query,reindent=True)
@@ -443,6 +447,14 @@ if actual_query != '' and sqlformat:
         actual_query = "update "+table_name+" "+actual_query
     elif query_type.lower() == "count":
         actual_query = "select count(*) from "+table_name+" "+actual_query[5:]
+    elif query_type.lower() == "distinct":
+        actual_query = "select distinct * from "+table_name+" "+actual_query[8:]
+    elif query_type.lower() == "delete" and next_keyword == "where":
+        actual_query = "delete from "+table_name+" "+actual_query[6:]
+    elif query_type.lower() == "insert" and next_keyword != "into":
+        actual_query = "insert into "+table_name+" "+actual_query[6:]
+    elif query_type.lower() == "alter" and next_keyword != "table":
+        actual_query = "alter table "+table_name+" "+actual_query[5:]
 
 if max_count > 0:
     if actual_query == "" and queryfile_data == '':
