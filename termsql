@@ -69,6 +69,7 @@ max_rows = 0
 queryfile_data = ''
 query_off = False
 merge = None
+raw = False
 calc = ''
 filename = '' #by default termsql writes to stdout, but if the user sets a filename we write there instead
 show_header = False
@@ -122,6 +123,7 @@ parser.add_argument("-d", "--delimiter",  nargs='?', help="custom literal delimi
 parser.add_argument("-g", "--regex-delimiter",  nargs='?', help="custom regex based delimiter (default is whitespace)")
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default depends on output mode. ie. for list '|' is the default and for csv ',' is the default) ")
 parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input is a whole column, next row begins after n lines")
+parser.add_argument("-R","--raw", help="create extra column raw with untreated input data",action="store_true")
 parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)")
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
 parser.add_argument("--calc", nargs='?', help="use sqlite as simple calculator, you can do multiple calculations separated by commata (i.e. \"(5*109.05)/2 , 345+789\") In this mode stdin input is ignored")
@@ -160,6 +162,8 @@ if args.whitespace:
     mode = 'column'
 if args.calc:
     calc = args.calc
+if args.raw:
+    raw = True
 if args.merge:
     merge = int(args.merge)
 if args.outfile:
@@ -297,7 +301,11 @@ def traverse_input():
                 max_count = len(row)
             if first_line and args.head:
                 get_col_names(row)
+                if raw:
+                    colnames.append("raw")
             else:
+                if raw:
+                    row.append(line.rstrip('\r\n'))
                 build_insert(row)
                 insert_count += 1
             first_line = False
@@ -321,6 +329,8 @@ def traverse_input():
     if len(col_properties) < max_count:
         max_count = len(col_properties)
 
+    if raw:
+        max_count+=1
 
 if infile != None:
     traverse_input()
@@ -341,6 +351,8 @@ if max_count > 0:
             create_table_string += ", "
             colnames_str += ","
         colname=get_col_name(x)
+        if raw and x == (max_count-1):
+            colname="raw"
         create_table_string += '"'+ colname + '"' + " " + get_col_type(x)
         colnames_str+='['+colname+']'
     if len(key_columns) > 0:
