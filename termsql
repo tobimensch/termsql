@@ -71,6 +71,11 @@ query_off = False
 merge = None
 raw = False
 calc = ''
+select = False
+where = False
+limit = False
+groupby = False
+orderby = False
 filename = '' #by default termsql writes to stdout, but if the user sets a filename we write there instead
 show_header = False
 drop_table = True #by default any existing table by the same name is dropped
@@ -145,6 +150,11 @@ parser.add_argument("-e","--edit", help="writes to the input file instead of std
 parser.add_argument("-q","--queryfile", nargs='?', help="load complex query from file, queries on the commandline get executed last")
 parser.add_argument("-t","--table", nargs='?', help="tablename (must be a valid sqlite tablename)")
 parser.add_argument("-s","--sqlite", nargs='?', help="path to sqlite executable")
+parser.add_argument("--select", help="same as 'select ...' SQL statement",action="store_true")
+parser.add_argument("--where", help="shortcut for 'select * from tbl where ...' SQL statement",action="store_true")
+parser.add_argument("--limit", help="shortcut for 'select * from tbl limit ...' SQL statement",action="store_true")
+parser.add_argument("--groupby", help="shortcut for 'select * from tbl group by ...' SQL statement",action="store_true")
+parser.add_argument("--orderby", help="shortcut for 'select * from tbl order by ...' SQL statement",action="store_true")
 parser.add_argument("-v","--version", help="display version information", action="store_true")
 args = parser.parse_args()
 
@@ -194,6 +204,16 @@ if args.show_header:
     show_header = True
 if args.append:
     drop_table = False
+if args.select:
+    select = True
+if args.where:
+    where = True
+if args.limit:
+    limit = True
+if args.groupby:
+    groupby = True
+if args.orderby:
+    orderby = True
 if args.version:
     print(VERSION)
     exit(0)   
@@ -419,6 +439,19 @@ actual_query = ' '.join(args.query)
 # - also easy
 #but even for the easy ones there are probably corner cases, so this feature might break something down the line ... who knows
 
+if select:
+    if actual_query.lower().startswith("where "):
+        actual_query = "select * "+actual_query
+    else:
+        actual_query = "select "+actual_query
+elif where:
+    actual_query = "select * from "+table_name+" where "+actual_query
+elif limit:
+    actual_query = "select * from "+table_name+" limit "+actual_query
+elif groupby:
+    actual_query = "select * from "+table_name+" group by "+actual_query
+elif orderby:
+    actual_query = "select * from "+table_name+" order by "+actual_query
 
 actual_query = actual_query.lstrip()
 if actual_query != '' and sqlformat:

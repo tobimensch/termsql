@@ -8,7 +8,7 @@ setup(name='termsql',
       description='Convert text from a file or from stdin into SQL table and query it instantly. Uses sqlite as backend. The idea is to make SQL into a tool on the command line or in scripts.',
       author='Tobias Glaesser',
       url='https://gitorious.org/termsql',
-      scripts=['termsql'],
+      scripts=['termsql','where','limit','groupby','orderby','select'],
       data_files=[('/usr/share/man/man1/', ['termsql.1.gz'])]
      )
 
