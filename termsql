@@ -131,6 +131,7 @@ parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input
 parser.add_argument("-R","--raw", help="create extra column raw with untreated input data",action="store_true")
 parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)")
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
+parser.add_argument("-E","--extra-columns", nargs='?', help="add column(s) with preset value to generated table")
 parser.add_argument("--calc", nargs='?', help="use sqlite as simple calculator, you can do multiple calculations separated by commata (i.e. \"(5*109.05)/2 , 345+789\") In this mode stdin input is ignored")
 parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |). equal to mode column",action="store_true")
 parser.add_argument("-H","--offset-head", nargs='?', help="ignore first n lines of input",type=int)
@@ -222,6 +223,14 @@ if args.version:
 def shell(str):
     subprocess.call(str, shell=True)
 
+# split up extra-columns
+if args.extra_columns != None:
+    extra_colnames=args.extra_columns.split(",")[0::2]
+    extra_inserts=args.extra_columns.split(",")[1::2]
+    assert( len(extra_colnames) == len(extra_inserts) )
+else:
+    extra_colnames=[]
+
 colnames = [] #only needed when using --head optional arg
 
 #get name of column x
@@ -230,8 +239,14 @@ def get_col_name(i):
         return columns[i]
     elif args.head and len(colnames) > i:
         return colnames[i]
-    else:
-        return "COL"+str(i)
+    elif len(extra_colnames) > 0:
+        if args.columns:
+            knowncols=len(columns)
+        else:
+            knowncols=len(colnames)
+        if (knowncols+len(extra_colnames)) > i:
+            return extra_colnames[i-knowncols]
+    return "COL"+str(i)
 
 inserts = []
 
@@ -282,6 +297,11 @@ def build_insert(row):
             insert.append(col)
             update_col_properties(c,col)
         c += 1
+    # add extra-columns' values
+    for col in extra_inserts:
+        insert.append(col)
+        update_col_properties(c,col)
+        c += 1
     inserts.append(insert)
 
 #get column names using row
@@ -318,7 +338,7 @@ def traverse_input():
             else:
                 row = line.split()        
             if len(row) > max_count:
-                max_count = len(row)
+                max_count = len(row)+len(extra_colnames)
             if first_line and args.head:
                 get_col_names(row)
                 if raw:
