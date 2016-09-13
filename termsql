@@ -133,6 +133,7 @@ parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input
 parser.add_argument("-R","--raw", help="create extra column raw with untreated input data", action="store_true")
 parser.add_argument("-k","--key-columns", nargs='?', help="one or more columns can make up the primary key (i.e -k COL0 or -c one,two,three -k one,two)")
 parser.add_argument("-c","--columns", nargs='?', help="set custom column names (ie. -c 'name,street,age')")
+parser.add_argument("-E","--extra-columns", nargs='?', help="add column(s) with preset value to generated table")
 parser.add_argument("--calc", nargs='?', help="use sqlite as simple calculator, you can do multiple calculations separated by commata (i.e. \"(5*109.05)/2 , 345+789\") In this mode stdin input is ignored")
 parser.add_argument("-w","--whitespace", help="use whitespace as field separator (default is |). equal to mode column", action="store_true")
 parser.add_argument("-H","--offset-head", nargs='?', help="ignore first n lines of input", type=int)
@@ -143,8 +144,13 @@ parser.add_argument("-D","--dump", help="dump complete SQL to create table and c
 parser.add_argument("-Q","--sql", help="outputs the full query, like it would be fed to SQlite", action="store_true")
 parser.add_argument("-m","--mode", nargs='?', help="set sqlite output mode i.e.: csv, column, html, insert, line, list, tabs, tcl (default is list)")
 parser.add_argument("-r","--merge", nargs='?', help="merges all columns from column n to the last one into one. This is useful when you have data like filenames with whitespaces in it, to prevent it from getting split by the delimiter. Note that counting starts from 0, therefore n=0 is the first column ...")
+<<<<<<< HEAD
 parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query", action="store_true")
 parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existin$g table. Assumes existing table is compatible.", action="store_true")
+=======
+parser.add_argument("-x","--select-all", help="add final SELECT * FROM to user defined query",action="store_true")
+parser.add_argument("-a","--append", help="don't DROP TABLE instead just append data to existing table. Assumes table if exists is compatible.",action="store_true")
+>>>>>>> be385dd1508512324dcad0526c5f236236c2edad
 parser.add_argument("-i","--infile",  nargs='?', help="use file as input instead of stdin")
 parser.add_argument("-o","--outfile", nargs='?', help="location/filename to use for sql database (by default a tempfile is used)")
 parser.add_argument("-P","--pipe", nargs='?', help="pipe database to other termsql instance")
@@ -228,6 +234,14 @@ if args.version:
 def shell(str):
     subprocess.call(str, shell=True)
 
+# split up extra-columns
+if args.extra_columns != None:
+    extra_colnames=args.extra_columns.split(",")[0::2]
+    extra_inserts=args.extra_columns.split(",")[1::2]
+    assert( len(extra_colnames) == len(extra_inserts) )
+else:
+    extra_colnames=[]
+
 colnames = [] #only needed when using --head optional arg
 
 #get name of column x
@@ -236,8 +250,14 @@ def get_col_name(i):
         return columns[i]
     elif args.head and len(colnames) > i:
         return colnames[i]
-    else:
-        return "COL"+str(i)
+    elif len(extra_colnames) > 0:
+        if args.columns:
+            knowncols=len(columns)
+        else:
+            knowncols=len(colnames)
+        if (knowncols+len(extra_colnames)) > i:
+            return extra_colnames[i-knowncols]
+    return "COL"+str(i)
 
 inserts = []
 
@@ -288,6 +308,11 @@ def build_insert(row):
             insert.append(col)
             update_col_properties(c,col)
         c += 1
+    # add extra-columns' values
+    for col in extra_inserts:
+        insert.append(col)
+        update_col_properties(c,col)
+        c += 1
     inserts.append(insert)
 
 #get column names using row
@@ -330,7 +355,7 @@ def traverse_input():
             else:
                 row = line.split()
             if len(row) > max_count:
-                max_count = len(row)
+                max_count = len(row)+len(extra_colnames)
             if first_line and args.head:
                 get_col_names(row)
                 if raw:
@@ -377,7 +402,10 @@ inserts = temp
 colnames_str=''
 #create create database string
 if max_count > 0:
-    create_table_string =  "create table \""+table_name+"\"("
+    create_table_string =  "create table "
+    if not drop_table:
+        create_table_string =  create_table_string+"if not exists "
+    create_table_string =  create_table_string+"\""+table_name+"\"("
     for x in range(0,max_count):
         if x > 0:
             create_table_string += ", "
@@ -405,12 +433,12 @@ c = conn.cursor()
 if drop_table:
     c.execute("drop table if exists \""+table_name+"\";")
 
-    #create database and databasefile
-    if max_count > 0:
-        c.execute(create_table_string)
-        if args.dump_create_table:
-            print(create_table_string)
-            query_off = True
+#create database and databasefile
+if max_count > 0:
+    c.execute(create_table_string)
+    if args.dump_create_table:
+        print(create_table_string)
+        query_off = True
 
 temp = []
 temp.extend('?' * (max_count))
