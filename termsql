@@ -506,11 +506,11 @@ if actual_query != '' and sqlformat:
         actual_query = "select count(*) from "+table_name+" "+actual_query[5:]
     elif query_type.lower() == "distinct":
         actual_query = "select distinct * from "+table_name+" "+actual_query[8:]
-    elif query_type.lower() == "delete" and next_keyword == "where":
+    elif query_type.lower() == "delete" and next_keyword.lower() == "where":
         actual_query = "delete from "+table_name+" "+actual_query[6:]
-    elif query_type.lower() == "insert" and next_keyword != "into":
+    elif query_type.lower() == "insert" and next_keyword.lower() != "into":
         actual_query = "insert into "+table_name+" "+actual_query[6:]
-    elif query_type.lower() == "alter" and next_keyword != "table":
+    elif query_type.lower() == "alter" and next_keyword.lower() != "table":
         actual_query = "alter table "+table_name+" "+actual_query[5:]
 
 if max_count > 0:
