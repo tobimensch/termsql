@@ -60,6 +60,7 @@ table_name = 'tbl'
 sql_db_file = ''
 delimiter = ' '
 regex_delimiter = None
+quotechar = None
 csv_split = False
 separator = '' #default to whatever sqlite defaults to
 mode = 'list'
@@ -127,7 +128,8 @@ parser.add_argument("-1", "--head", help="use first line/head(er) for column nam
 parser.add_argument("-0", "--show-header", help="show column names as header in output (not shown by default)", action="store_true")
 parser.add_argument("-d", "--delimiter",  nargs='?', help="custom literal delimiter (default is whitespace)")
 parser.add_argument("-g", "--regex-delimiter",  nargs='?', help="custom regex based delimiter (default is whitespace)")
-parser.add_argument("--csv", help="Use csv parser to split cells. Delimiter defaults to ','.", action="store_true")
+parser.add_argument("-u", "--quotechar", nargs='?', help="Set quotechar for cells. (default is none). If set, the csv parser is used internally.")
+parser.add_argument("--csv", help="Use csv parser to split cells. Delimiter defaults to ','. Quotechar defaults to '\"'.", action="store_true")
 parser.add_argument("-p","--separator", nargs='?', help="set sqlite output field separator (default depends on output mode. ie. for list '|' is the default and for csv ',' is the default) ")
 parser.add_argument("-l","--line-as-column", nargs='?', help="each line of input is a whole column, next row begins after n lines")
 parser.add_argument("-R","--raw", help="create extra column raw with untreated input data", action="store_true")
@@ -165,13 +167,18 @@ args = parser.parse_args()
 #process command line input
 if args.mode:
     mode = args.mode.lower()
+if args.quotechar or args.csv:
+    import csv
+if args.csv:
+    csv_split = True
+    quotechar = '"'
+    delimiter = ','
+if args.quotechar:
+    quotechar = args.quotechar
 if args.delimiter:
     delimiter = args.delimiter
 if args.regex_delimiter:
     regex_delimiter = args.regex_delimiter
-if args.csv:
-    import csv
-    csv_split = True
 if args.separator:
     separator = args.separator
 if args.whitespace:
@@ -317,11 +324,8 @@ def traverse_input():
         if not args.line_as_column: #this is the standard input traversal
             if args.max_rows and insert_count >= int(args.max_rows):
                 break
-            if csv_split:
-                csv_delimiter = ","
-                if delimiter != ' ':
-                    csv_delimiter = delimiter
-                for reader_row in csv.reader([line], quotechar='"', delimiter=csv_delimiter, skipinitialspace=True):
+            if csv_split or quotechar != None:
+                for reader_row in csv.reader([line], quotechar=quotechar, delimiter=delimiter, skipinitialspace=True):
                     row = reader_row
             elif regex_delimiter != None:
                 row = re.split(regex_delimiter,line.rstrip('\r\n').lstrip())
