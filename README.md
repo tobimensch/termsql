@@ -11,6 +11,10 @@ Requirements:
  - python
  - sqlite3
  - sqlparse module 0.1.15 and up from https://github.com/andialbrecht/sqlparse (optional)
+ 
+Installing using pip:
+
+    pip3 install termsql
 
 To install termsql open a terminal and run:
 
