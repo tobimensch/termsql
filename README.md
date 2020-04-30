@@ -114,7 +114,7 @@ Want to contribute by reporting a problem/bug? Feel free to use [the issue track
 Roadmap
 =======
 
-- ~~it's not commited to the repository yet~~, but soon termsql will support shorter SQL statements,
+- ~~it's not documented in the man page yet~~, but termsql supports shorter SQL statements,
   where "from tbl" and other repetitive text isn't required anymore.
   - "select col0,col1 where col1='foo'" => "select col0,col1 from tbl where col1='foo'"
     - this particular feature is now commited and working given that you have sqlparse module version 0.1.15 and up
