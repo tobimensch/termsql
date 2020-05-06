@@ -10,7 +10,7 @@ setup(name='termsql',
       author_email='tobimensch@gmail.com',
       url='https://github.com/tobimensch/termsql',
       scripts=['termsql','where','limit','groupby','orderby','select'],
-      data_files=[('/usr/share/man/man1/', ['termsql.1.gz'])],
+      data_files=[('share/man/man1/', ['termsql.1.gz'])],
       license='MIT'
      )
 
